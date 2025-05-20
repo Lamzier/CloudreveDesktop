@@ -8,4 +8,16 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
+    <ItemGroup>
+        <Page Remove="MainWindow-d.xaml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="MainWindow-d.xaml.cs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NUnit" Version="4.3.2"/>
+    </ItemGroup>
+
 </Project>
