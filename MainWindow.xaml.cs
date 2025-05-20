@@ -18,7 +18,6 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        //asd
         InitializeComponent();
         
     }
