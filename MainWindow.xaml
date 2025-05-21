@@ -243,8 +243,7 @@
 
                     <Button Style="{StaticResource WindowControlButton}"
                             Content="&#xE8BB;"
-                            FontFamily="Segoe MDL2 Assets"
-                            Click="CloseButton_Click" />
+                            FontFamily="Segoe MDL2 Assets" />
                 </StackPanel>
             </Grid>
 

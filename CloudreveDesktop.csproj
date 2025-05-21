@@ -10,14 +10,43 @@
 
     <ItemGroup>
         <Page Remove="MainWindow-d.xaml"/>
+        <Page Remove="view\**"/>
+        <Page Remove="LoginWindow2.xaml"/>
     </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="MainWindow-d.xaml.cs"/>
+        <Compile Remove="view\**"/>
+        <Compile Remove="LoginWindow2.xaml.cs"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="NUnit" Version="4.3.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="view\LamNas.mhtml"/>
+        <None Remove="view\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="view\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Resources\logo.svg"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Resources\logo.png"/>
+        <None Remove="Resources\email.png"/>
+        <Resource Include="Resources\email.png"/>
+        <None Remove="Resources\password.png"/>
+        <Resource Include="Resources\password.png"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="Resources\logo.png"/>
     </ItemGroup>
 
 </Project>
