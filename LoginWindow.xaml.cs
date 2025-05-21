@@ -11,6 +11,8 @@ namespace CloudreveDesktop;
 
 public partial class LoginWindow : Window
 {
+    private bool _isLogin;
+
     public LoginWindow()
     {
         InitializeComponent();
@@ -64,7 +66,12 @@ public partial class LoginWindow : Window
         var json = JsonNode.Parse(responseString)!;
         var code = (int)json["code"]!;
         var msg = (string)json["msg"]!;
-        if (code != 0) MessageBox.Show(msg, "错误");
+        if (code != 0)
+        {
+            MessageBox.Show(msg, "错误");
+            return;
+        }
+
         // 登陆成功
         var cookies = response.Headers.GetValues("Set-Cookie").ToList();
         App.Cookies.Clear(); //清除cookies
@@ -72,8 +79,9 @@ public partial class LoginWindow : Window
         App.UserName = username;
         App.Password = password;
         App.UpdateUser(); //更新数据到本地文件
+        _isLogin = true;
         //隐藏窗口
-        Hide();
+        Close();
     }
 
     private void DomainName_Click(object sender, RoutedEventArgs e)
@@ -95,6 +103,12 @@ public partial class LoginWindow : Window
 
     protected override void OnClosing(CancelEventArgs e)
     {
+        if (_isLogin)
+        {
+            base.OnClosing(e);
+            return;
+        }
+
         var result = MessageBox.Show("不登录则无法正常使用，是否关闭？", "信息", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (result == MessageBoxResult.No) e.Cancel = true; //阻止关闭
         else Application.Current.Shutdown(); //关闭整个程序

@@ -3,345 +3,179 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="Cloudreve Desktop"
-        Height="720"
-        Width="1280"
+        WindowStyle="ThreeDBorderWindow"
         WindowStartupLocation="CenterScreen"
-        FontFamily="Segoe UI"
-        WindowStyle="None"
-        AllowsTransparency="True"
-        Background="Transparent"
-        Margin="0"
-        Padding="0">
-
+        Icon="pack://application:,,,/Resources/logo.png"
+        Title="LamNas"
+        Height="600"
+        Width="1200"
+        Background="#333333">
     <Window.Resources>
-        <!-- 颜色资源 -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#6C5CE7" />
-        <SolidColorBrush x:Key="BackgroundBrush" Color="#1A1A1A" />
-        <SolidColorBrush x:Key="SurfaceBrush" Color="#2D2D2D" />
-        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF" />
-        <SolidColorBrush x:Key="TextSecondary" Color="#B3B3B3" />
-        <SolidColorBrush x:Key="HoverBrush" Color="#3A3A3A" />
-        <SolidColorBrush x:Key="ActiveBrush" Color="#4A4A4A" />
-
-        <!-- 窗口控制按钮样式 -->
-        <Style TargetType="Button" x:Key="WindowControlButton">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Width" Value="45" />
-            <Setter Property="Height" Value="30" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="4">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource HoverBrush}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- 导航按钮样式 -->
-        <Style TargetType="Button" x:Key="NavButton">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="Padding" Value="16,12" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="Highlight"
-                                    Width="3"
-                                    HorizontalAlignment="Left"
-                                    Background="{StaticResource PrimaryBrush}"
-                                    Opacity="0">
-                                <Border.Triggers>
-                                    <EventTrigger RoutedEvent="Loaded">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                                 Duration="0:0:0.2"
-                                                                 To="1"
-                                                                 AutoReverse="True" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Border.Triggers>
-                            </Border>
-                            <Border x:Name="ContentBorder"
-                                    Background="{TemplateBinding Background}"
-                                    CornerRadius="6">
-                                <ContentPresenter Content="{TemplateBinding Content}"
-                                                  Margin="{TemplateBinding Padding}"
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ContentBorder" Property="Background"
-                                        Value="{StaticResource HoverBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ContentBorder" Property="Background"
-                                        Value="{StaticResource ActiveBrush}" />
-                                <Setter TargetName="Highlight" Property="Opacity" Value="1" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- 工具栏按钮样式 -->
-        <Style TargetType="Button" x:Key="ToolbarButton">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
-            <Setter Property="BorderThickness" Value="0" />
+        <!-- 定义一些样式和资源 -->
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="5" />
             <Setter Property="Padding" Value="10" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="6"
-                                RenderTransformOrigin="0.5,0.5">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                            <Border.RenderTransform>
-                                <ScaleTransform x:Name="scaleTransform" />
-                            </Border.RenderTransform>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource HoverBrush}" />
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="scaleTransform"
-                                                             Storyboard.TargetProperty="ScaleX"
-                                                             To="0.92"
-                                                             Duration="0:0:0.1" />
-                                            <DoubleAnimation Storyboard.TargetName="scaleTransform"
-                                                             Storyboard.TargetProperty="ScaleY"
-                                                             To="0.92"
-                                                             Duration="0:0:0.1" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- 搜索框样式 -->
-        <Style TargetType="TextBox" x:Key="SearchBoxStyle">
-            <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="CaretBrush" Value="{StaticResource PrimaryBrush}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="20">
-                            <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="Center" />
-                                <TextBlock x:Name="placeholder"
-                                           Text="搜索文件..."
-                                           Margin="16,0"
-                                           VerticalAlignment="Center"
-                                           Foreground="{StaticResource TextSecondary}"
-                                           Visibility="Collapsed" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="Text" Value="">
-                                <Setter TargetName="placeholder" Property="Visibility" Value="Visible" />
-                            </Trigger>
-                            <Trigger Property="IsFocused" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#373737" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
-
-        <!-- 文件项样式 -->
-        <Style TargetType="Border" x:Key="FileItemStyle">
-            <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="0,4" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#373737" />
-                </Trigger>
-            </Style.Triggers>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style TargetType="{x:Type Separator}">
+            <Setter Property="Background" Value="Gray" />
+            <Setter Property="Height" Value="1" />
+        </Style>
+        <Style TargetType="{x:Type ProgressBar}">
+            <Setter Property="Background" Value="#444444" />
+            <Setter Property="Foreground" Value="#FFD700" />
         </Style>
     </Window.Resources>
 
-    <!-- 窗口主容器 -->
-    <Border Margin="10"
-            Background="{StaticResource BackgroundBrush}"
-            CornerRadius="10">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="30"
-                              ShadowDepth="0"
-                              Color="Black"
-                              Opacity="0.4" />
-        </Border.Effect>
+    <DockPanel LastChildFill="True">
+        <!-- 顶部导航栏 -->
+        <Grid DockPanel.Dock="Top" Background="#333333" Height="50" Margin="10,10,10,10">
+            <DockPanel LastChildFill="True">
+                <!-- 左侧标题 + 搜索框组合 -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <!-- Logo 图标 -->
+                    <Image Source="pack://application:,,,/Resources/logo.png"
+                           Width="38"
+                           Height="38"
+                           Stretch="UniformToFill"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0" />
 
-        <Grid>
-            <!-- 标题栏 -->
-            <Grid Height="42"
-                  VerticalAlignment="Top"
-                  Background="{StaticResource SurfaceBrush}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <!-- 拖动区域 -->
-                <Grid Grid.Column="0"
-                      Background="Transparent"
-                      MouseLeftButtonDown="DragWindow_MouseLeftButtonDown" />
-
-                <!-- 窗口控制按钮 -->
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal" VerticalAlignment="Top">
-                    <Button Style="{StaticResource WindowControlButton}"
-                            Content="&#xE921;"
-                            FontFamily="Segoe MDL2 Assets"
-                            Click="MinimizeButton_Click" />
-
-                    <Button x:Name="MaximizeRestoreButton"
-                            Style="{StaticResource WindowControlButton}"
-                            Content="&#xE922;"
-                            FontFamily="Segoe MDL2 Assets"
-                            Click="MaximizeButton_Click" />
-
-                    <Button Style="{StaticResource WindowControlButton}"
-                            Content="&#xE8BB;"
-                            FontFamily="Segoe MDL2 Assets" />
+                    <!-- 标题 -->
+                    <TextBlock Text="LamNas" FontSize="16" VerticalAlignment="Center" />
+                    <!-- 带图标的搜索框 -->
+                    <DockPanel Width="355" Margin="10,0,0,0" Background="#444444">
+                        <TextBox x:Name="SearchBox"
+                                 DockPanel.Dock="Left"
+                                 Width="300"
+                                 VerticalContentAlignment="Center" />
+                        <!-- 搜索图标 -->
+                        <Button DockPanel.Dock="Right" Width="30" Height="30" Padding="0">
+                            <Image Source="pack://application:,,,/Resources/search.png" Stretch="UniformToFill" />
+                        </Button>
+                    </DockPanel>
                 </StackPanel>
-            </Grid>
 
-            <!-- 主内容区 -->
-            <Grid Margin="0,42,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="240" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                <!-- 右侧区域：左侧按钮组 + 用户中心靠右 -->
+                <DockPanel LastChildFill="True" HorizontalAlignment="Right" Width="Auto">
 
-                <!-- 左侧导航 -->
-                <Border Grid.Column="0"
-                        Padding="16"
-                        Background="{StaticResource SurfaceBrush}">
-                    <StackPanel>
-                        <TextBlock Text="CLOUDREVE"
-                                   Foreground="{StaticResource PrimaryBrush}"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   Margin="0,0,0,24" />
-
-                        <Button Style="{StaticResource NavButton}"
-                                Content="我的文件"
-                                Margin="0,8,0,0" />
-                        <Button Style="{StaticResource NavButton}"
-                                Content="传输列表"
-                                Margin="0,8,0,0" />
-                        <Button Style="{StaticResource NavButton}"
-                                Content="回收站"
-                                Margin="0,8,0,0" />
-                        <Button Style="{StaticResource NavButton}"
-                                Content="账户设置"
-                                Margin="0,8,0,0" />
+                    <!-- 左侧按钮组：深色模式、设置 -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Width="30" Height="30" Padding="0">
+                            <Image Source="pack://application:,,,/Resources/mode.png" Stretch="UniformToFill" />
+                        </Button>
+                        <Button Width="30" Height="30" Padding="0">
+                            <Image Source="pack://application:,,,/Resources/setting.png" Stretch="UniformToFill" />
+                        </Button>
                     </StackPanel>
-                </Border>
 
-                <!-- 右侧内容 -->
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                    <!-- 用户中心：靠右显示 -->
+                    <Button Width="30" Height="30" Padding="0" HorizontalAlignment="Right">
+                        <Image Source="pack://application:,,,/Resources/user.png" Stretch="UniformToFill" />
+                    </Button>
 
-                    <!-- 工具栏 -->
-                    <Border Grid.Row="0"
-                            Padding="16"
-                            Background="{StaticResource SurfaceBrush}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                </DockPanel>
 
-                            <TextBox Grid.Column="0"
-                                     Style="{StaticResource SearchBoxStyle}"
-                                     Width="320" />
-
-                            <StackPanel Grid.Column="1"
-                                        Orientation="Horizontal">
-                                <Button Style="{StaticResource ToolbarButton}"
-                                        Content="&#xE721;"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        Margin="0,0,12,0" />
-                                <Button Style="{StaticResource ToolbarButton}"
-                                        Content="&#xE8FA;"
-                                        FontFamily="Segoe MDL2 Assets" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- 文件列表 -->
-                    <ScrollViewer Grid.Row="1"
-                                  Padding="16"
-                                  VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Files}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource FileItemStyle}">
-                                        <StackPanel Orientation="Horizontal"
-                                                    Margin="12,0">
-                                            <TextBlock Text="&#xE8A5;"
-                                                       FontFamily="Segoe MDL2 Assets"
-                                                       Foreground="{StaticResource PrimaryBrush}"
-                                                       FontSize="18"
-                                                       VerticalAlignment="Center" />
-                                            <TextBlock
-                                                Foreground="{StaticResource TextPrimary}"
-                                                VerticalAlignment="Center"
-                                                Margin="16,0,0,0"
-                                                FontSize="14" />
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
+            </DockPanel>
         </Grid>
-    </Border>
+        <!-- 左侧导航栏 -->
+        <Grid DockPanel.Dock="Left" Width="200" Background="#2A2A2A">
+            <DockPanel LastChildFill="False">
+                <!-- 滚动菜单区域 -->
+                <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <!-- 自定义 ScrollBar 样式：隐藏滚动条 -->
+                    <ScrollViewer.Resources>
+                        <Style TargetType="{x:Type ScrollBar}">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Border Background="Transparent" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ScrollViewer.Resources>
+
+                    <StackPanel Margin="0,10,0,0">
+                        <!-- 树状菜单 -->
+                        <TreeView BorderThickness="0" Background="#2A2A2A" Foreground="White">
+                            <!-- 我的文件 -->
+                            <TreeViewItem Header="我的文件" IsExpanded="False">
+                                <TreeViewItem Header="视频" Margin="0,5,0,5" />
+                                <TreeViewItem Header="图片" Margin="0,5,0,5" />
+                                <TreeViewItem Header="音乐" Margin="0,5,0,5" />
+                                <TreeViewItem Header="文档" Margin="0,5,0,5" />
+                                <TreeViewItem Header="添加标签..." Margin="0,5,0,5" />
+                            </TreeViewItem>
+
+                            <!-- 其他主菜单项 -->
+                            <TreeViewItem Header="我的分享" Margin="0,5,0,5" />
+                            <TreeViewItem Header="离线下载" Margin="0,5,0,5" />
+                            <TreeViewItem Header="连接" Margin="0,5,0,5" />
+                            <TreeViewItem Header="任务队列" Margin="0,5,0,5" />
+
+                            <!-- 分割线 -->
+                            <Separator Margin="10,10,10,10" />
+                        </TreeView>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- 存储空间信息（固定在左侧底部） -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="10,0,10,20">
+                    <TextBlock Text="存储空间" Margin="0,0,0,5" />
+                    <ProgressBar Value="579.4" Maximum="1000" Height="10" Margin="0,0,0,5" />
+                    <TextBlock Text="579.4 GB / 1.0 TB" FontSize="12" />
+                </StackPanel>
+
+            </DockPanel>
+        </Grid>
+        <!-- 主内容区域 -->
+        <Grid DockPanel.Dock="Right" Background="#333333" Margin="0,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 文件夹按钮列表 -->
+            <ItemsControl Grid.Column="0" Margin="0,0,10,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <system:String>电脑备份</system:String>
+                <system:String>微信备份</system:String>
+                <system:String>手机备份</system:String>
+                <system:String>共享文件</system:String>
+                <system:String>Ipad备份</system:String>
+            </ItemsControl>
+
+            <!-- 中间提示信息 -->
+            <TextBlock Grid.Column="1"
+                       Text="更多内容..."
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="24" />
+        </Grid>
+    </DockPanel>
 </Window>

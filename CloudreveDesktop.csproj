@@ -12,12 +12,14 @@
         <Page Remove="MainWindow-d.xaml"/>
         <Page Remove="view\**"/>
         <Page Remove="LoginWindow2.xaml"/>
+        <Page Remove="Window1.xaml"/>
     </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="MainWindow-d.xaml.cs"/>
         <Compile Remove="view\**"/>
         <Compile Remove="LoginWindow2.xaml.cs"/>
+        <Compile Remove="Window1.xaml.cs"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -40,13 +42,35 @@
     <ItemGroup>
         <None Remove="Resources\logo.png"/>
         <None Remove="Resources\email.png"/>
-        <Resource Include="Resources\email.png"/>
+        <Resource Include="Resources\email.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
         <None Remove="Resources\password.png"/>
-        <Resource Include="Resources\password.png"/>
+        <Resource Include="Resources\password.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Resources\search.png"/>
+        <Resource Include="Resources\search.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Resources\setting.png"/>
+        <Resource Include="Resources\setting.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Resources\user.png"/>
+        <Resource Include="Resources\user.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Resources\mode.png"/>
+        <Resource Include="Resources\mode.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
     </ItemGroup>
 
     <ItemGroup>
-        <Resource Include="Resources\logo.png"/>
+        <Resource Include="Resources\logo.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
     </ItemGroup>
 
 </Project>
