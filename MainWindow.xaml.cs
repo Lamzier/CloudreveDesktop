@@ -56,6 +56,6 @@ public partial class MainWindow : Window
         }
 
         if (code != 0) MessageBox.Show(code + "：" + msg, "错误"); //其他异常
-        // 已经登陆无需操作，可能需要在这里拿点信息
+        // 已经登陆无需操作，可能需要在这里拿点信息 
     }
 }
