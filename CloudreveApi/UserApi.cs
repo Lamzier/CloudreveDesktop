@@ -14,4 +14,15 @@ public static class UserApi
         var json = JsonNode.Parse(responseString)!;
         return json;
     }
+
+    // 获取用户存储容量
+    public static async Task<JsonNode> GetUserStorage()
+    {
+        var cookies = App.GetCookies();
+        if (cookies.Length > 0) App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
+        var response = await App.HttpClient.GetAsync(App.ServerUrl + "api/v3/user/storage");
+        var responseString = await response.Content.ReadAsStringAsync();
+        var json = JsonNode.Parse(responseString)!;
+        return json;
+    }
 }

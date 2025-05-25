@@ -20,6 +20,7 @@
         <Compile Remove="view\**"/>
         <Compile Remove="LoginWindow2.xaml.cs"/>
         <Compile Remove="Window1.xaml.cs"/>
+        <Compile Remove="TreeViewTemplateSelector.cs"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -65,6 +66,28 @@
         <Resource Include="Resources\mode.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>
+        <None Remove="Resources\document.png"/>
+        <Resource Include="Resources\document.png"/>
+        <None Remove="Resources\download.png"/>
+        <Resource Include="Resources\download.png"/>
+        <None Remove="Resources\folder.png"/>
+        <Resource Include="Resources\folder.png"/>
+        <None Remove="Resources\image.png"/>
+        <Resource Include="Resources\image.png"/>
+        <None Remove="Resources\link.png"/>
+        <Resource Include="Resources\link.png"/>
+        <None Remove="Resources\music.png"/>
+        <Resource Include="Resources\music.png"/>
+        <None Remove="Resources\share.png"/>
+        <Resource Include="Resources\share.png"/>
+        <None Remove="Resources\task.png"/>
+        <Resource Include="Resources\task.png"/>
+        <None Remove="Resources\video.png"/>
+        <Resource Include="Resources\video.png"/>
+        <None Remove="Resources\add-labels.png"/>
+        <Resource Include="Resources\add-labels.png"/>
+        <None Remove="Resources\storage.png"/>
+        <Resource Include="Resources\storage.png"/>
     </ItemGroup>
 
     <ItemGroup>

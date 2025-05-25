@@ -10,7 +10,9 @@
         Icon="pack://application:,,,/Resources/logo.png"
         Title="LamNas"
         Height="600"
+        MinHeight="600"
         Width="1200"
+        MinWidth="1200"
         Background="#333333">
     <Window.Resources>
         <!-- 定义一些样式和资源 -->
@@ -30,14 +32,17 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Foreground" Value="White" />
+
         </Style>
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Margin" Value="5" />
             <Setter Property="Foreground" Value="White" />
+
         </Style>
         <Style TargetType="{x:Type Separator}">
             <Setter Property="Background" Value="Gray" />
             <Setter Property="Height" Value="1" />
+
         </Style>
         <Style TargetType="{x:Type ProgressBar}">
             <Setter Property="Background" Value="#444444" />
@@ -118,33 +123,140 @@
 
                     <StackPanel Margin="0,10,0,0">
                         <!-- 树状菜单 -->
-                        <TreeView BorderThickness="0" Background="#2A2A2A" Foreground="White">
+                        <TreeView BorderThickness="0" Background="#2A2A2A" Foreground="White" Padding="0">
                             <!-- 我的文件 -->
-                            <TreeViewItem Header="我的文件" IsExpanded="False">
-                                <TreeViewItem Header="视频" Margin="0,5,0,5" />
-                                <TreeViewItem Header="图片" Margin="0,5,0,5" />
-                                <TreeViewItem Header="音乐" Margin="0,5,0,5" />
-                                <TreeViewItem Header="文档" Margin="0,5,0,5" />
-                                <TreeViewItem Header="添加标签..." Margin="0,5,0,5" />
+                            <TreeViewItem>
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Resources/folder.png" Width="16"
+                                               Height="16" Margin="0,0,5,0" />
+                                        <TextBlock Text="我的文件" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                                <TreeViewItem Margin="-10,5,0,5">
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="pack://application:,,,/Resources/video.png" Width="14"
+                                                   Height="14" Margin="0,0,5,0" />
+                                            <TextBlock Text="视频" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                </TreeViewItem>
+                                <TreeViewItem Margin="-10,5,0,5">
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="pack://application:,,,/Resources/image.png" Width="14"
+                                                   Height="14" Margin="0,0,5,0" />
+                                            <TextBlock Text="图片" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                </TreeViewItem>
+                                <TreeViewItem Margin="-10,5,0,5">
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="pack://application:,,,/Resources/music.png" Width="14"
+                                                   Height="14" Margin="0,0,5,0" />
+                                            <TextBlock Text="音乐" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                </TreeViewItem>
+                                <TreeViewItem Margin="-10,5,0,5">
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="pack://application:,,,/Resources/document.png" Width="14"
+                                                   Height="14" Margin="0,0,5,0" />
+                                            <TextBlock Text="文档" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                </TreeViewItem>
+                                <TreeViewItem Margin="-10,5,0,5">
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="pack://application:,,,/Resources/add-labels.png" Width="14"
+                                                   Height="14" Margin="0,0,5,0" />
+                                            <TextBlock Text="添加标签..." VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                </TreeViewItem>
                             </TreeViewItem>
 
                             <!-- 其他主菜单项 -->
-                            <TreeViewItem Header="我的分享" Margin="0,5,0,5" />
-                            <TreeViewItem Header="离线下载" Margin="0,5,0,5" />
-                            <TreeViewItem Header="连接" Margin="0,5,0,5" />
-                            <TreeViewItem Header="任务队列" Margin="0,5,0,5" />
+                            <TreeViewItem Margin="0,5,0,5">
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Resources/share.png" Width="14"
+                                               Height="14" Margin="0,0,5,0" />
+                                        <TextBlock Text="我的分享" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                            </TreeViewItem>
+
+                            <TreeViewItem Margin="0,5,0,5">
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Resources/download.png" Width="14"
+                                               Height="14" Margin="0,0,5,0" />
+                                        <TextBlock Text="离线下载" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                            </TreeViewItem>
+
+                            <TreeViewItem Margin="0,5,0,5">
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Resources/link.png" Width="14"
+                                               Height="14" Margin="0,0,5,0" />
+                                        <TextBlock Text="连接" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                            </TreeViewItem>
+
+                            <TreeViewItem Margin="0,5,0,5">
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Resources/task.png" Width="14"
+                                               Height="14" Margin="0,0,5,0" />
+                                        <TextBlock Text="任务队列" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                            </TreeViewItem>
 
                             <!-- 分割线 -->
                             <Separator Margin="10,10,10,10" />
                         </TreeView>
+
+
                     </StackPanel>
                 </ScrollViewer>
 
                 <!-- 存储空间信息（固定在左侧底部） -->
-                <StackPanel DockPanel.Dock="Bottom" Margin="10,0,10,20">
-                    <TextBlock Text="存储空间" Margin="0,0,0,5" />
-                    <ProgressBar Value="579.4" Maximum="1000" Height="10" Margin="0,0,0,5" />
-                    <TextBlock Text="579.4 GB / 1.0 TB" FontSize="12" />
+                <StackPanel DockPanel.Dock="Bottom">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 0 0 8">
+                        <Image Source="pack://application:,,,/Resources/storage.png"
+                               Width="20"
+                               Height="20"
+                               Margin="0 0 8 0" />
+                        <TextBlock Text="存储空间"
+                                   FontSize="14"
+                                   Foreground="White"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Name="StorageFree" Text="剩余：0.0 GB"
+                                   FontSize="10"
+                                   VerticalAlignment="Center"
+                                   Foreground="White"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+
+                    <ProgressBar Value="579.4"
+                                 Maximum="1000" />
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Stretch">
+                        <TextBlock Name="StorageUsed" Text="0 GB" />
+                        <TextBlock Text=" / " />
+                        <TextBlock Name="StorageTotal" Text="0 TB" Foreground="#6C5CE7" />
+                    </StackPanel>
                 </StackPanel>
 
             </DockPanel>
