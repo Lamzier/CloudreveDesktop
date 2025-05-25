@@ -35,6 +35,9 @@ public partial class App
 
     public static readonly HttpClient HttpClient = new();
 
+    // 是否已经登陆
+    public static bool IsLoggedIn = false;
+
     // 初始化
     public App()
     {
@@ -78,6 +81,13 @@ public partial class App
         return string.Join(";", Cookies);
     }
 
+    // 清除数据，用于注销登陆
+    public static void ClearData()
+    {
+        UserName = "";
+        Password = "";
+        Cookies.Clear();
+    }
 
     // 更新用户信息到本地文件
     public static string UpdateUser()

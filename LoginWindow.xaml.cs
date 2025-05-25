@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace CloudreveDesktop;
 
-public partial class LoginWindow : Window
+public partial class LoginWindow
 {
     private bool _isLogin;
 
@@ -80,7 +80,9 @@ public partial class LoginWindow : Window
         App.Password = password;
         App.UpdateUser(); //更新数据到本地文件
         _isLogin = true;
-        //隐藏窗口
+        // 重新渲染主窗体UI
+        App.IsLoggedIn = true;
+        MainWindow.Instance.Rendering();
         Close();
     }
 

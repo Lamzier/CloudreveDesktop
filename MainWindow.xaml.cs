@@ -1,19 +1,29 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using CloudreveDesktop.CloudreveApi;
+using CloudreveDesktop.utils;
 
 namespace CloudreveDesktop;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     public MainWindow()
     {
         InitializeComponent();
-        CheckLogin(); //检查登陆
-        // 已经登陆了
-        InitUserInfoStorage();
+        CheckLogin(); //检查登陆 + 渲染数据
+        Instance = this;
+    }
+
+    public static MainWindow Instance { get; private set; } = null!;
+
+    // 渲染数据
+    public void Rendering()
+    {
+        if (App.IsLoggedIn) // 已经登陆了
+            InitUserInfoStorage();
     }
 
     private async void InitUserInfoStorage()
@@ -37,7 +47,6 @@ public partial class MainWindow : Window
         var usedGStr = usedG.ToString("F1") + " GB";
         var freeGStr = freeG.ToString("F1") + " GB";
         //给UI更新
-        Console.WriteLine(totalTStr);
         StorageFree.Text = "剩余：" + freeGStr;
         StorageTotal.Text = totalTStr;
         StorageUsed.Text = usedGStr;
@@ -55,7 +64,34 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (code != 0) MessageBox.Show(code + "：" + msg, "错误"); //其他异常
-        // 已经登陆无需操作，可能需要在这里拿点信息 
+        if (code != 0)
+        {
+            MessageBox.Show(code + "：" + msg, "错误"); //其他异常
+            return;
+        }
+
+        // 已经登陆
+        App.IsLoggedIn = true;
+        Rendering(); //渲染数据
+    }
+
+    // 设置
+    private void Setting_Click(object sender, RoutedEventArgs e)
+    {
+        var proc = new Process();
+        proc.StartInfo.FileName = App.ServerUrl + "setting";
+        proc.StartInfo.UseShellExecute = true;
+        proc.Start();
+    }
+
+    // 用户中心
+    private void UserCenter_Click(object sender, RoutedEventArgs e)
+    {
+        var result = MessageBox.Show("是否注销登陆？", "信息", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result == MessageBoxResult.No) return;
+        App.ClearData();
+        App.UpdateUser();
+        // 重新启动软件
+        AppUtil.Restart();
     }
 }

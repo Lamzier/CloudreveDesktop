@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
+        <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -88,6 +89,10 @@
         <Resource Include="Resources\add-labels.png"/>
         <None Remove="Resources\storage.png"/>
         <Resource Include="Resources\storage.png"/>
+        <None Remove="Resources\logo.ico"/>
+        <Resource Include="Resources\logo.ico"/>
+        <None Remove="Resources\nfs.png"/>
+        <Resource Include="Resources\nfs.png"/>
     </ItemGroup>
 
     <ItemGroup>
