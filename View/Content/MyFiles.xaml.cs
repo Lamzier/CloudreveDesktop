@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CloudreveDesktop.CloudreveApi;
 using CloudreveDesktop.pojo;
 using CloudreveDesktop.utils;
+using Microsoft.Win32;
 
 namespace CloudreveDesktop.View.Content;
 
@@ -13,18 +14,57 @@ public partial class MyFiles
 {
     private readonly ObservableCollection<FilePojo> _fileItems = []; // 读取到的文件列表（同步到UI）
 
+    private string _dirId = ""; //当前文件夹的Id
+
+    private string _policyId = ""; // 存储策略id
+
     public MyFiles()
     {
         InitializeComponent();
         Rendering();
-        Instance = this;
     }
 
-    private string Path { get; set; } = null!;
+    private string DirPath { get; set; } = null!;
 
-    private ObservableCollection<string> PathList { get; } = [];
+    private ObservableCollection<string> DirPathList { get; } = [];
 
-    public static MyFiles Instance { get; private set; } = null!;
+    private void AddFile_Click(object sender, MouseButtonEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "请选择要上传的文件",
+            Filter = "所有文件 (*.*)|*.*", // 你可以限制特定类型
+            Multiselect = false // 是否允许多选
+        };
+        // 显示对话框并判断是否点击了“确定”
+        if (dialog.ShowDialog() == true)
+        {
+            var selectedFilePath = dialog.FileName; // 选择了文件
+            // 上传文件
+            AddFile(selectedFilePath);
+        }
+    }
+
+    private async void AddFile(string selectedFilePath)
+    {
+        var json = await FilesApi.UploadFileGetSessionId(DirPath, _policyId, selectedFilePath);
+        var code = (int)json["code"]!;
+        var msg = (string)json["msg"]!;
+        if (code != 0)
+        {
+            MessageBox.Show(msg, "错误");
+            return;
+        }
+
+        var data = json["data"]!;
+        var sessionId = (string)data["sessionID"]!;
+        var uploadJson = await FilesApi.UploadFile(selectedFilePath, sessionId);
+        code = (int)uploadJson["code"]!;
+        msg = (string)uploadJson["msg"]!;
+        if (code != 0) MessageBox.Show(msg, "错误");
+        // 刷新界面
+        Refresh();
+    }
 
     // 渲染数据
     private void Rendering()
@@ -35,16 +75,17 @@ public partial class MyFiles
 
     private async void InitDirectory(string path)
     {
-        Path = path;
-        var pathList = Path.Split("/");
-        PathList.Clear();
+        DirPath = path;
+        var pathList = DirPath.Split("/");
+        DirPathList.Clear();
         _fileItems.Clear();
-        pathList.ToList().ForEach(se => PathList.Add(se));
-
+        pathList.ToList().ForEach(se => DirPathList.Add(se));
+        _dirId = "";
+        _policyId = "";
         DockPanelNav.Children.Clear();
-        for (var i = 0; i < PathList.Count; i++)
+        for (var i = 0; i < DirPathList.Count; i++)
         {
-            var se = PathList[i];
+            var se = DirPathList[i];
             if (se == string.Empty) continue;
             var button = new Button
             {
@@ -74,8 +115,10 @@ public partial class MyFiles
         }
 
         var data = directoryList["data"]!;
+        _dirId = (string)data["parent"]!;
+        var policy = data["policy"]!; // 存储策略
+        _policyId = (string)policy["id"]!;
         var objects = (JsonArray)data["objects"]!;
-
 
         foreach (var jsonNode in objects)
         {
@@ -156,14 +199,20 @@ public partial class MyFiles
 
     private void Goto_Click(int index)
     {
-        if (index >= PathList.Count - 1) return;
+        if (index >= DirPathList.Count - 1) return;
         var path = "";
         for (var i = 0; i < index; i++)
         {
             path += "/";
-            path += PathList[i + 1];
+            path += DirPathList[i + 1];
         }
 
         InitDirectory(path); // 跳转到目录
+    }
+
+    // 刷新界面
+    private void Refresh()
+    {
+        InitDirectory(DirPath);
     }
 }

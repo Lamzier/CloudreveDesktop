@@ -49,6 +49,7 @@ public partial class LoginWindow
         //都正确，执行登陆操作
         await Login(email, password, "");
         LoginButton.IsEnabled = true;
+        MainWindow.Instance.Rendering();
     }
 
     private async Task Login(string username, string password, string captchaCode)
@@ -82,7 +83,6 @@ public partial class LoginWindow
         _isLogin = true;
         // 重新渲染主窗体UI
         App.IsLoggedIn = true;
-        MainWindow.Instance.Rendering();
         Close();
     }
 

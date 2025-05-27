@@ -12,7 +12,8 @@ namespace CloudreveDesktop;
 public partial class App
 {
     // 服务器地址
-    public static readonly string ServerUrl = "http://nas.lamzy.cn/";
+    // public static readonly string ServerUrl = "http://nas.lamzy.cn/";
+    public static readonly string ServerUrl = "http://127.0.0.1:5212/";
 
     public static readonly string DomainName = "nas.lamzy.cn";
 

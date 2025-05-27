@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using CloudreveDesktop.utils;
 
 namespace CloudreveDesktop.CloudreveApi;
 
@@ -8,7 +9,8 @@ public static class UserApi
     public static async Task<JsonNode> GetUserSetting()
     {
         var cookies = App.GetCookies();
-        if (cookies.Length > 0) App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
+        if (cookies.Length <= 0) return ResultUtil.GetErrorJson();
+        App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
         var response = await App.HttpClient.GetAsync(App.ServerUrl + "api/v3/user/setting");
         var responseString = await response.Content.ReadAsStringAsync();
         var json = JsonNode.Parse(responseString)!;
@@ -19,7 +21,8 @@ public static class UserApi
     public static async Task<JsonNode> GetUserStorage()
     {
         var cookies = App.GetCookies();
-        if (cookies.Length > 0) App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
+        if (cookies.Length <= 0) return ResultUtil.GetErrorJson();
+        App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
         var response = await App.HttpClient.GetAsync(App.ServerUrl + "api/v3/user/storage");
         var responseString = await response.Content.ReadAsStringAsync();
         var json = JsonNode.Parse(responseString)!;

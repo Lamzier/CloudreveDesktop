@@ -62,7 +62,7 @@ public partial class MainWindow
         var userSetting = await UserApi.GetUserSetting();
         var code = (int)userSetting["code"]!;
         var msg = (string)userSetting["msg"]!;
-        if (code == 401)
+        if (code is 401 or -1)
         {
             new LoginWindow().ShowDialog(); // 没登录 阻塞显示
             return;
@@ -107,5 +107,10 @@ public partial class MainWindow
     private void MyFiles_Click(object sender, MouseButtonEventArgs e)
     {
         ContentFrame.Source = new Uri("View/Content/MyFiles.xaml", UriKind.Relative);
+    }
+
+    private void MountNfs_Click(object sender, MouseButtonEventArgs e)
+    {
+        ContentFrame.Source = new Uri("View/Content/MountNfs.xaml", UriKind.Relative);
     }
 }
