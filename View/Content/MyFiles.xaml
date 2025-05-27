@@ -158,6 +158,7 @@
         </Style>
 
         <utils:FileTypeToIconConverter x:Key="FileTypeToIconConverter" />
+
     </Page.Resources>
 
     <Grid>
