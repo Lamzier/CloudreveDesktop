@@ -1,0 +1,296 @@
+﻿<Page x:Class="CloudreveDesktop.View.Content.MyFiles"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:utils="clr-namespace:CloudreveDesktop.utils"
+      mc:Ignorable="d"
+      MinHeight="450"
+      MinWidth="950"
+      Title="MyFiles">
+
+    <Page.Resources>
+        <!-- Navigation Button Style -->
+        <Style x:Key="NavigationButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#444444" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <!-- Toolbar Button Style -->
+        <Style x:Key="ToolbarButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#444444" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Plus Button Style -->
+        <Style x:Key="PlusButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF69B4" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Content" Value="+" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="20">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF87CEEB" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <utils:SizeToHumanReadableConverter x:Key="SizeConverter" />
+        <utils:PercentageConverter x:Key="PercentageConverter" />
+
+        <!-- 新增表头样式 -->
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="#2D2D30" />
+            <Setter Property="Foreground" Value="#D0D0D0" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="BorderBrush" Value="#404040" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="FontFamily" Value="Segoe UI Semibold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GridViewColumnHeader">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 新增列表项样式 -->
+        <Style x:Key="ModernFileItemStyle" TargetType="ListViewItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <GridViewRowPresenter VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2D2D30" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#3E3E40" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 新增文本样式 -->
+        <Style x:Key="FileNameTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#E0E0E0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <Style x:Key="MetaDataTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#A0A0A0" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <utils:FileTypeToIconConverter x:Key="FileTypeToIconConverter" />
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Navigation Bar -->
+        <DockPanel Grid.Row="0" Background="#333333">
+            <Button Content="/" Style="{StaticResource NavigationButtonStyle}" PreviewMouseLeftButtonDown="Home_Click" />
+            <Button Content=">" Style="{StaticResource NavigationButtonStyle}" IsEnabled="False" />
+            <!-- 路径 -->
+            <DockPanel Name="DockPanelNav">
+                <Button Content="电脑同步" Style="{StaticResource NavigationButtonStyle}"
+                        PreviewMouseLeftButtonDown="Goto_Click" />
+            </DockPanel>
+
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource ToolbarButtonStyle}">
+                    <Image Source="/Resources/download.png" Width="16" Height="16" />
+                </Button>
+                <Button Style="{StaticResource ToolbarButtonStyle}">
+                    <Image Source="/Resources/grid.png" Width="16" Height="16" />
+                </Button>
+                <Button Style="{StaticResource ToolbarButtonStyle}">
+                    <Image Source="/Resources/paging.png" Width="16" Height="16" />
+                </Button>
+                <Button Style="{StaticResource ToolbarButtonStyle}">
+                    <Image Source="/Resources/sort-order.png" Width="16" Height="16" />
+                </Button>
+
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+            <!-- Center Information -->
+            <Grid Grid.Column="1" Background="#222222">
+
+                <!-- 文件列表部分 -->
+                <ScrollViewer Grid.Row="0"
+                              VerticalScrollBarVisibility="Auto"
+                              PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
+                              Padding="0" Margin="0">
+                    <ListView Name="FilesListView"
+                              PreviewMouseDoubleClick="ListViewItem_DoubleClick"
+                              ItemContainerStyle="{StaticResource ModernFileItemStyle}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              Background="#252526"
+                              BorderThickness="0"
+                              Margin="16"
+                              Padding="0">
+                        <ListView.View>
+                            <GridView>
+                                <!-- 名称列 -->
+                                <GridViewColumn Header="名称"
+                                                Width="{Binding ActualWidth, 
+                        RelativeSource={RelativeSource AncestorType=ListView},
+                        Converter={StaticResource PercentageConverter},
+                        ConverterParameter=0.5}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="8,0">
+                                                <!-- 动态文件图标 -->
+                                                <Image
+                                                    Source="{Binding Type, Converter={StaticResource FileTypeToIconConverter}}"
+                                                    Width="20"
+                                                    Height="20"
+                                                    Margin="0,0,12,0"
+                                                    VerticalAlignment="Center" />
+                                                <!-- 文件名 -->
+                                                <TextBlock Text="{Binding Name}"
+                                                           Style="{StaticResource FileNameTextStyle}"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+
+                                <!-- 大小列 -->
+                                <GridViewColumn Header="大小"
+                                                Width="{Binding ActualWidth, 
+                          RelativeSource={RelativeSource AncestorType=ListView},
+                          Converter={StaticResource PercentageConverter},
+                          ConverterParameter=0.2}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Size, Converter={StaticResource SizeConverter}}"
+                                                       Style="{StaticResource MetaDataTextStyle}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <!-- 日期列 -->
+                                <GridViewColumn Header="修改日期"
+                                                Width="{Binding ActualWidth, 
+                          RelativeSource={RelativeSource AncestorType=ListView},
+                          Converter={StaticResource PercentageConverter},
+                          ConverterParameter=0.3}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Date, StringFormat='yyyy年MM月dd日 HH:mm:ss'}"
+                                                       Style="{StaticResource MetaDataTextStyle}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+
+                </ScrollViewer>
+
+            </Grid>
+
+            <!-- Add Button -->
+            <Button Grid.Column="1"
+                    Style="{StaticResource PlusButtonStyle}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,20,20" />
+
+        </Grid>
+    </Grid>
+</Page>

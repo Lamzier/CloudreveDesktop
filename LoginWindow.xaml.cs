@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows;
+using CloudreveDesktop.View.Content;
 
 namespace CloudreveDesktop;
 
@@ -83,6 +84,7 @@ public partial class LoginWindow
         // 重新渲染主窗体UI
         App.IsLoggedIn = true;
         MainWindow.Instance.Rendering();
+        MyFiles.Instance.Rendering();
         Close();
     }
 

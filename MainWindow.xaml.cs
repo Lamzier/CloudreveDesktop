@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using CloudreveDesktop.CloudreveApi;
 using CloudreveDesktop.utils;
 
@@ -23,7 +24,10 @@ public partial class MainWindow
     public void Rendering()
     {
         if (App.IsLoggedIn) // 已经登陆了
+        {
             InitUserInfoStorage();
+            ContentFrame.Source = new Uri("View/Content/MyFiles.xaml", UriKind.Relative);
+        }
     }
 
     private async void InitUserInfoStorage()
@@ -93,5 +97,15 @@ public partial class MainWindow
         App.UpdateUser();
         // 重新启动软件
         AppUtil.Restart();
+    }
+
+    private void MyShare_Click(object sender, MouseButtonEventArgs e)
+    {
+        ContentFrame.Source = new Uri("View/Content/MyShare.xaml", UriKind.Relative);
+    }
+
+    private void MyFiles_Click(object sender, MouseButtonEventArgs e)
+    {
+        ContentFrame.Source = new Uri("View/Content/MyFiles.xaml", UriKind.Relative);
     }
 }

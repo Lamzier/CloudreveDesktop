@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         WindowStyle="ThreeDBorderWindow"
         WindowStartupLocation="CenterScreen"
@@ -126,7 +125,7 @@
                         <!-- 树状菜单 -->
                         <TreeView BorderThickness="0" Background="#2A2A2A" Foreground="White" Padding="0">
                             <!-- 我的文件 -->
-                            <TreeViewItem>
+                            <TreeViewItem PreviewMouseLeftButtonDown="MyFiles_Click">
                                 <TreeViewItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <Image Source="pack://application:,,,/Resources/folder.png" Width="16"
@@ -182,7 +181,7 @@
                             </TreeViewItem>
 
                             <!-- 其他主菜单项 -->
-                            <TreeViewItem Margin="0,5,0,5">
+                            <TreeViewItem PreviewMouseLeftButtonDown="MyShare_Click" Margin="0,5,0,5">
                                 <TreeViewItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <Image Source="pack://application:,,,/Resources/share.png" Width="14"
@@ -274,31 +273,10 @@
         </Grid>
         <!-- 主内容区域 -->
         <Grid DockPanel.Dock="Right" Background="#333333" Margin="0,0,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- 文件夹按钮列表 -->
-            <ItemsControl Grid.Column="0" Margin="0,0,10,0">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <system:String>电脑备份</system:String>
-                <system:String>微信备份</system:String>
-                <system:String>手机备份</system:String>
-                <system:String>共享文件</system:String>
-                <system:String>Ipad备份</system:String>
-            </ItemsControl>
-
-            <!-- 中间提示信息 -->
-            <TextBlock Grid.Column="1"
-                       Text="更多内容..."
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       FontSize="24" />
+            <!-- 嵌入MyFiles.xaml页面 -->
+            <!-- Source="View/Content/MyFiles.xaml" -->
+            <Frame Name="ContentFrame" Padding="5,0,5,5" Margin="0,0,0,0"
+                   NavigationUIVisibility="Hidden" />
         </Grid>
     </DockPanel>
 </Window>

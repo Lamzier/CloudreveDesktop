@@ -11,30 +11,24 @@
 
     <ItemGroup>
         <Page Remove="MainWindow-d.xaml"/>
-        <Page Remove="view\**"/>
         <Page Remove="LoginWindow2.xaml"/>
         <Page Remove="Window1.xaml"/>
     </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="MainWindow-d.xaml.cs"/>
-        <Compile Remove="view\**"/>
         <Compile Remove="LoginWindow2.xaml.cs"/>
         <Compile Remove="Window1.xaml.cs"/>
         <Compile Remove="TreeViewTemplateSelector.cs"/>
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135"/>
         <PackageReference Include="NUnit" Version="4.3.2"/>
     </ItemGroup>
 
     <ItemGroup>
         <None Remove="view\LamNas.mhtml"/>
-        <None Remove="view\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Remove="view\**"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -93,6 +87,19 @@
         <Resource Include="Resources\logo.ico"/>
         <None Remove="Resources\nfs.png"/>
         <Resource Include="Resources\nfs.png"/>
+        <None Remove="Resources\gird.png"/>
+        <None Remove="Resources\grid.png"/>
+        <Resource Include="Resources\grid.png"/>
+        <None Remove="Resources\paging.png"/>
+        <Resource Include="Resources\paging.png"/>
+        <None Remove="Resources\sort-order.png"/>
+        <Resource Include="Resources\sort-order.png"/>
+        <None Remove="Resources\archive.png"/>
+        <Resource Include="Resources\archive.png"/>
+        <None Remove="Resources\file.png"/>
+        <Resource Include="Resources\file.png"/>
+        <None Remove="Resources\pdf.png"/>
+        <Resource Include="Resources\pdf.png"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace CloudreveDesktop.utils;
 
-public class AppUtil
+public static class AppUtil
 {
     // 重启软件
     public static void Restart()
