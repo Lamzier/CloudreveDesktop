@@ -30,6 +30,10 @@ public partial class App
     // 我的文档路径
     private static readonly string DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
+    // 下载路径
+    public static readonly string DownloadPath =
+        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\CloudreveDesktop";
+
     // Aes加密默认密匙
     private static readonly string AesPassword = "Lamzy";
 
@@ -38,6 +42,10 @@ public partial class App
     // 是否已经登陆
     public static bool IsLoggedIn = false;
 
+    // 执行路径
+    public static string FullPath = AppDomain.CurrentDomain.BaseDirectory;
+
+
     // 初始化
     public App()
     {
@@ -45,7 +53,7 @@ public partial class App
         var directoryPath = Path.GetDirectoryName(userPath);
         if (!string.IsNullOrEmpty(directoryPath)) Directory.CreateDirectory(directoryPath); //创建父目录文件
         if (!File.Exists(userPath))
-            using (var fs = File.Create(userPath)) //自动释放流资源
+            using (File.Create(userPath))
             {
             }
 
@@ -53,7 +61,6 @@ public partial class App
         var userContent = File.ReadAllText(userPath);
         if (userContent.Length <= 0) userContent = UpdateUser();
         var encrypted = AesUtil.Decrypt(userContent, AesPassword);
-        // Console.WriteLine(encrypted);
         try
         {
             var json = JsonNode.Parse(encrypted)!;

@@ -5,12 +5,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CloudreveDesktop.CloudreveApi;
 using CloudreveDesktop.pojo;
+using CloudreveDesktop.utils;
 
 namespace CloudreveDesktop.View.Content;
 
 public partial class MyFiles
 {
-    private readonly ObservableCollection<FilePojo> FileItems = []; // 读取到的文件列表（同步到UI）
+    private readonly ObservableCollection<FilePojo> _fileItems = []; // 读取到的文件列表（同步到UI）
 
     public MyFiles()
     {
@@ -19,14 +20,14 @@ public partial class MyFiles
         Instance = this;
     }
 
-    public string Path { get; set; }
+    private string Path { get; set; } = null!;
 
-    public ObservableCollection<string> PathList { get; } = [];
+    private ObservableCollection<string> PathList { get; } = [];
 
     public static MyFiles Instance { get; private set; } = null!;
 
     // 渲染数据
-    public void Rendering()
+    private void Rendering()
     {
         if (App.IsLoggedIn) // 已经登陆了
             InitDirectory("/");
@@ -37,7 +38,7 @@ public partial class MyFiles
         Path = path;
         var pathList = Path.Split("/");
         PathList.Clear();
-        FileItems.Clear();
+        _fileItems.Clear();
         pathList.ToList().ForEach(se => PathList.Add(se));
 
         DockPanelNav.Children.Clear();
@@ -50,6 +51,8 @@ public partial class MyFiles
                 Content = se,
                 Style = (Style)FindResource("NavigationButtonStyle")
             };
+            var index = i;
+            button.PreviewMouseLeftButtonDown += (_, _) => Goto_Click(index);
             var button2 = new Button
             {
                 Content = ">",
@@ -61,12 +64,7 @@ public partial class MyFiles
             DockPanelNav.Children.Add(button2);
         }
 
-
-        // uiElementCollection.Add(Instance);
-        // <Button Content="/" Style="{StaticResource NavigationButtonStyle}" PreviewMouseLeftButtonDown="Home_Click" />
-
-
-        var directoryList = await FilesApi.Directory(path);
+        var directoryList = await FilesApi.GetDirectory(path);
         var code = (int)directoryList["code"]!;
         var msg = (string)directoryList["msg"]!;
         if (code != 0)
@@ -81,18 +79,20 @@ public partial class MyFiles
 
         foreach (var jsonNode in objects)
         {
-            FilePojo filePojo = new();
-            filePojo.Id = (string)jsonNode?["id"]!;
-            filePojo.Name = (string)jsonNode?["name"]!;
-            filePojo.Path = (string)jsonNode?["path"]!;
-            filePojo.Size = (long)jsonNode?["size"]!;
-            filePojo.Type = (string)jsonNode?["type"]!;
-            filePojo.Date = (DateTimeOffset)jsonNode?["date"]!;
-            filePojo.CreateDate = (DateTimeOffset)jsonNode?["create_date"]!;
-            FileItems.Add(filePojo);
+            FilePojo filePojo = new()
+            {
+                Id = (string)jsonNode?["id"]!,
+                Name = (string)jsonNode?["name"]!,
+                Path = (string)jsonNode?["path"]!,
+                Size = (long)jsonNode?["size"]!,
+                Type = (string)jsonNode?["type"]!,
+                Date = (DateTimeOffset)jsonNode?["date"]!,
+                CreateDate = (DateTimeOffset)jsonNode?["create_date"]!
+            };
+            _fileItems.Add(filePojo);
         }
 
-        FilesListView.ItemsSource = FileItems;
+        FilesListView.ItemsSource = _fileItems;
     }
 
     private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -103,7 +103,7 @@ public partial class MyFiles
         e.Handled = true;
     }
 
-    private void ListViewItem_DoubleClick(object sender, MouseButtonEventArgs e)
+    private async void ListViewItem_DoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (FilesListView.SelectedItem is not FilePojo item) return;
         var path = item.Path;
@@ -121,7 +121,32 @@ public partial class MyFiles
         }
 
         // 文件 ，执行下载
-        Console.WriteLine("download");
+        var json = await FilesApi.GetDownloadKey(item.Id);
+        var code = (int)json["code"]!;
+        var msg = (string)json["msg"]!;
+        if (code != 0)
+        {
+            MessageBox.Show(msg, "错误");
+            return;
+        }
+
+        var data = (string)json["data"]!;
+        if (data.StartsWith("/")) data = data.Substring(1);
+        var downloadUrl = App.ServerUrl + data; // 文件下载Url
+
+        var state = await FilesApi.DownloadFile(downloadUrl, App.DownloadPath + "/" + item.Name);
+
+        // 添加完成下载提示和音效
+        if (state)
+        {
+            MessageBox.Show("文件已成功下载到：" + App.DownloadPath + "/" + item.Name, "下载完成");
+            Mp3Util.Play("download");
+        }
+        else
+        {
+            MessageBox.Show("文件下载失败，请重试。", "下载失败");
+            Mp3Util.Play("error");
+        }
     }
 
     private void Home_Click(object sender, MouseButtonEventArgs e)
@@ -129,7 +154,16 @@ public partial class MyFiles
         InitDirectory("/");
     }
 
-    private void Goto_Click(object sender, MouseButtonEventArgs e)
+    private void Goto_Click(int index)
     {
+        if (index >= PathList.Count - 1) return;
+        var path = "";
+        for (var i = 0; i < index; i++)
+        {
+            path += "/";
+            path += PathList[i + 1];
+        }
+
+        InitDirectory(path); // 跳转到目录
     }
 }

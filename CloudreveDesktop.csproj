@@ -100,6 +100,16 @@
         <Resource Include="Resources\file.png"/>
         <None Remove="Resources\pdf.png"/>
         <Resource Include="Resources\pdf.png"/>
+        <None Remove="Resources\Sound\download.wav"/>
+        <None Remove="Resources\Sound\download.mp3"/>
+        <Content Include="Resources\Sound\download.mp3">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Resources\Sound\download~1.mp3"/>
+        <None Remove="Resources\Sound\error.mp3"/>
+        <Content Include="Resources\Sound\error.mp3">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

@@ -172,11 +172,8 @@
             <Button Content=">" Style="{StaticResource NavigationButtonStyle}" IsEnabled="False" />
             <!-- 路径 -->
             <DockPanel Name="DockPanelNav">
-                <Button Content="电脑同步" Style="{StaticResource NavigationButtonStyle}"
-                        PreviewMouseLeftButtonDown="Goto_Click" />
+                <!-- 动态生成 -->
             </DockPanel>
-
-
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Style="{StaticResource ToolbarButtonStyle}">
                     <Image Source="/Resources/download.png" Width="16" Height="16" />
