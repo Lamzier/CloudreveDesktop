@@ -55,6 +55,73 @@ public static class FilesApi
         }
     }
 
+    public static async Task<JsonNode> ReName(string id, string type, string newName)
+    {
+        var cookies = App.GetCookies();
+        if (cookies.Length <= 0) return ResultUtil.GetErrorJson();
+        App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
+        var data = new
+        {
+            action = "rename",
+            src = new
+            {
+                dirs = new List<string>(),
+                items = new List<string>()
+            },
+            new_name = newName
+        };
+        if (type.ToLower().Equals("dir"))
+            data.src.dirs.Add(id);
+        else
+            data.src.items.Add(id);
+        var contentJson = JsonSerializer.Serialize(data);
+        Console.WriteLine(contentJson);
+        var jsonContent = new StringContent(contentJson, Encoding.UTF8, "application/json");
+        var response = await App.HttpClient.PostAsync(App.ServerUrl + "api/v3/object/rename", jsonContent);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var json = JsonNode.Parse(responseString)!;
+        return json;
+    }
+
+    public static async Task<JsonNode> NewDir(string newPath)
+    {
+        var cookies = App.GetCookies();
+        if (cookies.Length <= 0) return ResultUtil.GetErrorJson();
+        App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
+        var data = new
+        {
+            path = newPath
+        };
+        var contentJson = JsonSerializer.Serialize(data);
+        var jsonContent = new StringContent(contentJson, Encoding.UTF8, "application/json");
+        var response = await App.HttpClient.PutAsync(App.ServerUrl + "api/v3/directory", jsonContent);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var json = JsonNode.Parse(responseString)!;
+        return json;
+    }
+
+    public static async Task<JsonNode> DeleteFile(string fileId, string dirId)
+    {
+        var cookies = App.GetCookies();
+        if (cookies.Length <= 0) return ResultUtil.GetErrorJson();
+        App.HttpClient.DefaultRequestHeaders.Add("cookie", cookies);
+        var data = new
+        {
+            items = new List<string>(),
+            dirs = new List<string>(),
+            force = false,
+            unlink = false
+        };
+        if (!string.IsNullOrEmpty(fileId)) data.items.Add(fileId);
+        if (!string.IsNullOrEmpty(dirId)) data.dirs.Add(dirId);
+        var contentJson = JsonSerializer.Serialize(data);
+        var jsonContent = new StringContent(contentJson, Encoding.UTF8, "application/json");
+        var response = await HttpUtil.DeleteAsync(App.ServerUrl + "api/v3/object", jsonContent);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var json = JsonNode.Parse(responseString)!;
+        return json;
+    }
+
     public static async Task<JsonNode> UploadFile(string selectedFilePath, string sessionId)
     {
         var cookies = App.GetCookies();

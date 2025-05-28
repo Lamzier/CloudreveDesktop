@@ -110,6 +110,8 @@
         <Content Include="Resources\Sound\error.mp3">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="Resources\switch.png"/>
+        <Resource Include="Resources\switch.png"/>
     </ItemGroup>
 
     <ItemGroup>

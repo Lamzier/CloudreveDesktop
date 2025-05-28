@@ -2,6 +2,13 @@
 
 public class FilePojo
 {
+    public FilePojo()
+    {
+        Instance = this;
+    }
+
+    public FilePojo Instance { get; set; }
+
     public string Id { get; set; } // id
     public string Name { get; set; } // 名称
     public string Path { get; set; } // 路径

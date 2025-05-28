@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CloudreveDesktop.CloudreveApi;
 using CloudreveDesktop.pojo;
 using CloudreveDesktop.utils;
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
 
 namespace CloudreveDesktop.View.Content;
@@ -24,6 +25,7 @@ public partial class MyFiles
         Rendering();
     }
 
+    // 当前路径
     private string DirPath { get; set; } = null!;
 
     private ObservableCollection<string> DirPathList { get; } = [];
@@ -214,5 +216,71 @@ public partial class MyFiles
     private void Refresh()
     {
         InitDirectory(DirPath);
+    }
+
+    private async void DeleteFile_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: FilePojo filePojo }) return;
+        var confirm = MessageBox.Show(
+            $"确定要删除 [{filePojo.Type}] 类型的文件吗？\n文件名：{filePojo.Name}\n文件ID：{filePojo.Id}",
+            "删除确认",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.Yes) return;
+        //删除文件
+        JsonNode json;
+        if (filePojo.Type.ToLower().Equals("dir"))
+            json = await FilesApi.DeleteFile(null!, filePojo.Id);
+        else
+            json = await FilesApi.DeleteFile(filePojo.Id, null!);
+        var code = (int)json["code"]!;
+        var msg = (string)json["msg"]!;
+        if (code != 0)
+        {
+            MessageBox.Show(msg, "错误");
+            return;
+        }
+
+        // 刷新页面
+        Refresh();
+    }
+
+    private async void ReName_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is not FilePojo filePojo) return;
+        if (Interaction.InputBox("重命名", "新名称：", filePojo.Name) is not { } newName
+            || string.IsNullOrWhiteSpace(newName)) return;
+        newName = newName.Trim();
+        if (filePojo.Name.Equals(newName)) return;
+        var json = await FilesApi.ReName(filePojo.Id, filePojo.Type, newName);
+        var code = (int)json["code"]!;
+        var msg = (string)json["msg"]!;
+        if (code != 0)
+        {
+            MessageBox.Show(msg, "错误");
+            return;
+        }
+
+        // 刷新页面
+        Refresh();
+    }
+
+    private async void NewDir_Click(object sender, RoutedEventArgs e)
+    {
+        if (Interaction.InputBox("新建文件夹", "新建文件夹") is not { } newDir
+            || string.IsNullOrWhiteSpace(newDir)) return;
+        var safeDirPath = DirPath.TrimEnd('/') ?? "";
+        var newPath = $"{safeDirPath}/{newDir.TrimStart('/')}";
+        var json = await FilesApi.NewDir(newPath);
+        var code = (int)json["code"]!;
+        var msg = (string)json["msg"]!;
+        if (code != 0)
+        {
+            MessageBox.Show(msg, "错误");
+            return;
+        }
+
+        // 刷新页面
+        Refresh();
     }
 }

@@ -5,8 +5,181 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:CloudreveDesktop.View.Content"
       mc:Ignorable="d"
-      Title="MountNfs" Height="450" Width="800">
+      MinHeight="450"
+      MinWidth="950"
+      Title="MountNfs"
+      Background="#333333"
+      Foreground="White"
+      d:DataContext="{d:DesignInstance Type=local:MountNfs}">
+
+    <Page.Resources>
+        <!-- 统一文本样式 -->
+        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="8" />
+        </Style>
+
+        <!-- 增强版按钮样式 -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#444444" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12 6" />
+            <Setter Property="Margin" Value="4 2" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#555555" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#666666" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 现代化列表项样式 -->
+        <Style TargetType="ListViewItem">
+            <Setter Property="Background" Value="#333333" />
+            <Setter Property="BorderBrush" Value="#444444" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="8 6" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0 0 0 1"
+                                SnapsToDevicePixels="True">
+                            <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                                  Columns="{Binding View.Columns, 
+                                                RelativeSource={RelativeSource AncestorType=ListView}}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#444444" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#2A82DA" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 现代化表头样式 -->
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="#444444" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="8" />
+        </Style>
+    </Page.Resources>
+
     <Grid>
-        
+        <ListView ItemsSource="{Binding NfsInfoPojos}"
+                  Margin="10"
+                  BorderThickness="0"
+                  Background="Transparent"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.View>
+                <GridView>
+                    <!-- 挂载路径（自适应宽度） -->
+                    <GridViewColumn Header="挂载路径" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding NfsPath}" TextTrimming="CharacterEllipsis" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- 启用状态 -->
+                    <GridViewColumn Header="启用状态" Width="120">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsEnable}"
+                                          IsEnabled="False"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- 修改日期 -->
+                    <GridViewColumn Header="修改日期" Width="180">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Date, StringFormat=yyyy-MM-dd HH:mm}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- 创建日期 -->
+                    <GridViewColumn Header="创建日期" Width="180">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CreateDate, StringFormat=yyyy-MM-dd HH:mm}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- 操作列（优化按钮布局） -->
+                    <GridViewColumn Header="操作" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Margin="4">
+                                    <!-- 状态切换按钮 -->
+                                    <Button Tag="{Binding}" ToolTip="切换启用状态" Background="Transparent">
+                                        <Image Source="/Resources/switch.png" Width="24" Height="24">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Opacity" Value="0.6" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsEnable}" Value="True">
+                                                            <Setter Property="Opacity" Value="1" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                    </Button>
+
+                                    <!-- 删除按钮 -->
+                                    <Button Content="删除"
+                                            Click="DeleteButton_Click"
+                                            Tag="{Binding}"
+                                            Background="#FF4444"
+                                            Margin="12 0 0 0"
+                                            Padding="16 6" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Page>
