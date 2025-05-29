@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using CloudreveDesktop.pojo;
 using CloudreveDesktop.utils;
 
 namespace CloudreveDesktop;
@@ -18,6 +19,8 @@ public partial class App
     public static readonly string DomainName = "nas.lamzy.cn";
 
     public static readonly string ServerName = "LamNas";
+
+    public static readonly List<NfsInfoPojo> NfsInfos = [];
 
     // cookies
     public static readonly List<string> Cookies = new();
@@ -44,7 +47,7 @@ public partial class App
     public static bool IsLoggedIn = false;
 
     // 执行路径
-    public static string FullPath = AppDomain.CurrentDomain.BaseDirectory;
+    public static readonly string FullPath = AppDomain.CurrentDomain.BaseDirectory;
 
 
     // 初始化
@@ -74,12 +77,29 @@ public partial class App
                         Cookies.Add(jsonNode.ToString());
             }
 
+            if (json["NfsInfos"] != null)
+            {
+                var nfsInfos = (JsonArray)json["NfsInfos"]!;
+                NfsInfos.Clear();
+                foreach (var jsonNode in nfsInfos)
+                {
+                    if (jsonNode == null) continue;
+                    var nfsInfoPojo = new NfsInfoPojo();
+                    if (jsonNode["Id"] != null) nfsInfoPojo.Id = (long)jsonNode["Id"]!;
+                    if (jsonNode["NfsPath"] != null) nfsInfoPojo.NfsPath = (string)jsonNode["NfsPath"]!;
+                    if (jsonNode["IsEnable"] != null) nfsInfoPojo.IsEnable = (bool)jsonNode["IsEnable"]!;
+                    if (jsonNode["Date"] != null) nfsInfoPojo.Date = (DateTimeOffset)jsonNode["Date"]!;
+                    if (jsonNode["CreateDate"] != null)
+                        nfsInfoPojo.CreateDate = (DateTimeOffset)jsonNode["CreateDate"]!;
+                    NfsInfos.Add(nfsInfoPojo);
+                }
+            }
+
             if (json["userName"] != null) UserName = (string)json["userName"]!;
             if (json["Password"] != null) Password = (string)json["Password"]!;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             UpdateUser();
         }
     }
@@ -95,6 +115,7 @@ public partial class App
         UserName = "";
         Password = "";
         Cookies.Clear();
+        NfsInfos.Clear();
     }
 
     // 更新用户信息到本地文件
@@ -104,7 +125,15 @@ public partial class App
         {
             Cookies,
             userName = UserName,
-            Password
+            Password,
+            NfsInfos = NfsInfos.Select(n => new
+            {
+                n.Id,
+                n.NfsPath,
+                n.IsEnable,
+                n.Date,
+                n.CreateDate
+            })
         };
         var userDataJson = JsonSerializer.Serialize(userData);
         var encrypt = AesUtil.Encrypt(userDataJson, AesPassword);

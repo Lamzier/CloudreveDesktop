@@ -102,6 +102,11 @@
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="添加挂载" Click="AddMountNfs_Click" />
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <!-- 挂载路径（自适应宽度） -->
@@ -117,10 +122,11 @@
                     <GridViewColumn Header="启用状态" Width="120">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsEnable}"
-                                          IsEnabled="False"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
+                                <CheckBox
+                                    IsChecked="{Binding IsEnable}"
+                                    IsEnabled="False"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -152,7 +158,8 @@
                                             VerticalAlignment="Center"
                                             Margin="4">
                                     <!-- 状态切换按钮 -->
-                                    <Button Tag="{Binding}" ToolTip="切换启用状态" Background="Transparent">
+                                    <Button Click="Enable_Click" Tag="{Binding Id}" ToolTip="切换启用状态"
+                                            Background="Transparent">
                                         <Image Source="/Resources/switch.png" Width="24" Height="24">
                                             <Image.Style>
                                                 <Style TargetType="Image">
@@ -170,7 +177,7 @@
                                     <!-- 删除按钮 -->
                                     <Button Content="删除"
                                             Click="DeleteButton_Click"
-                                            Tag="{Binding}"
+                                            Tag="{Binding Id}"
                                             Background="#FF4444"
                                             Margin="12 0 0 0"
                                             Padding="16 6" />

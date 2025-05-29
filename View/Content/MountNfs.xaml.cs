@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using CloudreveDesktop.pojo;
+using Microsoft.VisualBasic;
 
 namespace CloudreveDesktop.View.Content;
 
@@ -10,28 +12,76 @@ public partial class MountNfs
     {
         InitializeComponent();
         DataContext = this;
-
-        // 初始化演示数据
-        NfsInfoPojos.Add(new NfsInfoPojo
-        {
-            NfsPath = "/",
-            IsEnable = true,
-            Date = DateTimeOffset.Now,
-            CreateDate = DateTimeOffset.Now.AddDays(-7)
-        });
-
-        NfsInfoPojos.Add(new NfsInfoPojo
-        {
-            NfsPath = "/离线下载",
-            IsEnable = false,
-            Date = DateTimeOffset.Now.AddHours(-2),
-            CreateDate = DateTimeOffset.Now.AddDays(-3)
-        });
+        foreach (var nfsInfoPojo in App.NfsInfos) NfsInfoPojos.Add(nfsInfoPojo);
+        Mounts();
     }
 
     public ObservableCollection<NfsInfoPojo> NfsInfoPojos { get; } = [];
 
     private void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
+        if (sender is not Button { Tag: long id }) return;
+        for (var i = 0; i < NfsInfoPojos.Count; i++)
+        {
+            var nfsInfoPojo = NfsInfoPojos[i];
+            if (!nfsInfoPojo.Id.Equals(id)) continue;
+            NfsInfoPojos.RemoveAt(i);
+        }
+
+        //修改到全局
+        App.NfsInfos.Clear();
+        App.NfsInfos.AddRange(NfsInfoPojos);
+        App.UpdateUser();
+        Mounts(); // 重新挂载
+    }
+
+    private void Enable_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: long id }) return;
+        for (var i = 0; i < NfsInfoPojos.Count; i++)
+        {
+            var nfsInfoPojo = NfsInfoPojos[i];
+            if (!nfsInfoPojo.Id.Equals(id)) continue;
+            nfsInfoPojo.IsEnable = !nfsInfoPojo.IsEnable;
+            NfsInfoPojos.RemoveAt(i);
+            NfsInfoPojos.Insert(i, nfsInfoPojo);
+        }
+
+        //修改到全局
+        App.NfsInfos.Clear();
+        App.NfsInfos.AddRange(NfsInfoPojos);
+        App.UpdateUser();
+        Mounts(); // 重新挂载
+    }
+
+    private void AddMountNfs_Click(object sender, RoutedEventArgs e)
+    {
+        var path = Interaction.InputBox("请输入挂载路径：\n例1：/\n例2：/目录1/目录2", "添加路径");
+        if (string.IsNullOrWhiteSpace(path)) return;
+
+        var enable = MessageBox.Show("是否启用该路径？", "确认", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+        NfsInfoPojos.Add(new NfsInfoPojo { NfsPath = path, IsEnable = enable, Date = DateTime.Now });
+        //NfsInfoPojos 检查 NfsPath合法性
+        //修改到全局
+        App.NfsInfos.Clear();
+        App.NfsInfos.AddRange(NfsInfoPojos);
+        App.UpdateUser();
+        Mounts(); // 重新挂载
+    }
+
+    // 挂载到本地磁盘
+    private void Mounts()
+    {
+        foreach (var nfsInfoPojo in NfsInfoPojos)
+        {
+            if (!nfsInfoPojo.IsEnable) continue;
+            Mount(nfsInfoPojo.NfsPath);
+        }
+    }
+
+    // 挂载硬盘
+    private void Mount(string path)
+    {
+        Console.WriteLine(path);
     }
 }
