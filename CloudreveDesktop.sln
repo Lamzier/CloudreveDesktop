@@ -12,5 +12,6 @@ Global
 		{61A00CD0-AA42-4006-AA93-065F17F4463B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A00CD0-AA42-4006-AA93-065F17F4463B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61A00CD0-AA42-4006-AA93-065F17F4463B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A00CD0-AA42-4006-AA93-065F17F4463B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -23,6 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="DokanNet" Version="2.3.0.1"/>
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0-preview.4.25258.110"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0-preview.4.25258.110"/>
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135"/>
         <PackageReference Include="NUnit" Version="4.3.2"/>
     </ItemGroup>
@@ -112,6 +115,11 @@
         </Content>
         <None Remove="Resources\switch.png"/>
         <Resource Include="Resources\switch.png"/>
+        <None Remove="App.manifest"/>
+        <None Remove="Resources\Msi\Dokan_x64.msi"/>
+        <Content Include="Resources\Msi\Dokan_x64.msi">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Net.Http;
+using System.Security.Principal;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Windows;
 using CloudreveDesktop.pojo;
 using CloudreveDesktop.utils;
 
@@ -34,6 +36,9 @@ public partial class App
     // 我的文档路径
     private static readonly string DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
+    // 缓存路径
+    public static readonly string TempPath = Path.GetTempPath() + "CloudreveDesktop";
+
     // 下载路径
     public static readonly string DownloadPath =
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\CloudreveDesktop";
@@ -53,6 +58,9 @@ public partial class App
     // 初始化
     public App()
     {
+        Instance = this;
+        CheckAdministrator(); // 检查管理员权限
+        MountNfsInit();
         var userPath = DocumentsPath + @"\CloudreveDesktop\user.lam";
         var directoryPath = Path.GetDirectoryName(userPath);
         if (!string.IsNullOrEmpty(directoryPath)) Directory.CreateDirectory(directoryPath); //创建父目录文件
@@ -102,6 +110,29 @@ public partial class App
         {
             UpdateUser();
         }
+
+        MountNfsUtil.Mounts(); // 挂载硬盘
+    }
+
+    private static App Instance { get; set; }
+
+    private void MountNfsInit()
+    {
+        MountNfsUtil.Init();
+    }
+
+    private static void CheckAdministrator()
+    {
+        if (IsAdministrator()) return;
+        MessageBox.Show("请以管理员权限运行！\n否则无法使用磁盘挂载功能！", "信息");
+        Instance.Shutdown();
+    }
+
+    private static bool IsAdministrator()
+    {
+        var identity = WindowsIdentity.GetCurrent();
+        var principal = new WindowsPrincipal(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
     }
 
     public static string GetCookies()

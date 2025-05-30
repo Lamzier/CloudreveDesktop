@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CloudreveDesktop.pojo;
+using CloudreveDesktop.utils;
 using Microsoft.VisualBasic;
 
 namespace CloudreveDesktop.View.Content;
@@ -13,7 +14,6 @@ public partial class MountNfs
         InitializeComponent();
         DataContext = this;
         foreach (var nfsInfoPojo in App.NfsInfos) NfsInfoPojos.Add(nfsInfoPojo);
-        Mounts();
     }
 
     public ObservableCollection<NfsInfoPojo> NfsInfoPojos { get; } = [];
@@ -32,7 +32,7 @@ public partial class MountNfs
         App.NfsInfos.Clear();
         App.NfsInfos.AddRange(NfsInfoPojos);
         App.UpdateUser();
-        Mounts(); // 重新挂载
+        MountNfsUtil.Mounts(); // 重新挂载
     }
 
     private void Enable_Click(object sender, RoutedEventArgs e)
@@ -51,7 +51,7 @@ public partial class MountNfs
         App.NfsInfos.Clear();
         App.NfsInfos.AddRange(NfsInfoPojos);
         App.UpdateUser();
-        Mounts(); // 重新挂载
+        MountNfsUtil.Mounts(); // 重新挂载
     }
 
     private void AddMountNfs_Click(object sender, RoutedEventArgs e)
@@ -66,22 +66,6 @@ public partial class MountNfs
         App.NfsInfos.Clear();
         App.NfsInfos.AddRange(NfsInfoPojos);
         App.UpdateUser();
-        Mounts(); // 重新挂载
-    }
-
-    // 挂载到本地磁盘
-    private void Mounts()
-    {
-        foreach (var nfsInfoPojo in NfsInfoPojos)
-        {
-            if (!nfsInfoPojo.IsEnable) continue;
-            Mount(nfsInfoPojo.NfsPath);
-        }
-    }
-
-    // 挂载硬盘
-    private void Mount(string path)
-    {
-        Console.WriteLine(path);
+        MountNfsUtil.Mounts(); // 重新挂载
     }
 }
