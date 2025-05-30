@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using System.Windows;
@@ -25,6 +26,16 @@ public static class MountNfsUtil
             {
                 MessageBox.Show("Dokan 文件系统驱动未安装",
                     "请先安装 Dokan Library 2.3.0.1000 版本");
+                // 打开安装Dokan程序
+                var msiPath1 = @"Resources\Msi\Dokan_x64.msi";
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "msiexec.exe",
+                    Arguments = $"/i \"{msiPath1}\" /qb", // /qb 只显示基础进度条
+                    Verb = "runas", // 依然需要管理员权限
+                    UseShellExecute = true, // 必须启用Shell执行
+                    CreateNoWindow = true // 不创建任何窗口
+                });
                 Application.Current.Shutdown(); // 关闭程序
                 return;
             }
@@ -35,6 +46,16 @@ public static class MountNfsUtil
             if (actualVersion != null && apiVersion != null) return;
             MessageBox.Show("Dokan 文件系统驱动未安装",
                 "请先安装 Dokan Library 2.3.0.1000 版本");
+            // 打开安装Dokan程序
+            var msiPath2 = @"Resources\Msi\Dokan_x64.msi";
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "msiexec.exe",
+                Arguments = $"/i \"{msiPath2}\" /qb", // /qb 只显示基础进度条
+                Verb = "runas", // 依然需要管理员权限
+                UseShellExecute = true, // 必须启用Shell执行
+                CreateNoWindow = true // 不创建任何窗口
+            });
             Application.Current.Shutdown(); // 关闭程序
         }
         catch (Exception ex)
