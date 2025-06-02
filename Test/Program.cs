@@ -18,12 +18,12 @@ public class Program
                 mre.Set();
             };
 
-            var rfs = new Rfs();
+            var rfs = new RFSDDD();
             var dokanBuilder = new DokanInstanceBuilder(dokan)
                 .ConfigureOptions(options =>
                 {
                     options.Options = DokanOptions.DebugMode | DokanOptions.StderrOutput;
-                    options.MountPoint = "r:\\";
+                    options.MountPoint = "r:\\"; // 设置挂载到的硬盘
                 });
             using (var dokanInstance = dokanBuilder.Build(rfs))
             {

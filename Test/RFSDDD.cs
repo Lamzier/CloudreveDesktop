@@ -6,7 +6,7 @@ using FileAccess = DokanNet.FileAccess;
 
 namespace CloudreveDesktop.Test;
 
-internal class Rfs : IDokanOperations
+internal class RFSDDD : IDokanOperations
 {
     #region DokanOperations member
 

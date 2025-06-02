@@ -25,7 +25,7 @@ public partial class App
     public static readonly List<NfsInfoPojo> NfsInfos = [];
 
     // cookies
-    public static readonly List<string> Cookies = new();
+    public static readonly List<string> Cookies = [];
 
     // 用户名
     public static string UserName = "";
@@ -94,7 +94,9 @@ public partial class App
                     if (jsonNode == null) continue;
                     var nfsInfoPojo = new NfsInfoPojo();
                     if (jsonNode["Id"] != null) nfsInfoPojo.Id = (long)jsonNode["Id"]!;
+                    if (jsonNode["Name"] != null) nfsInfoPojo.Name = (string)jsonNode["Name"]!;
                     if (jsonNode["NfsPath"] != null) nfsInfoPojo.NfsPath = (string)jsonNode["NfsPath"]!;
+                    if (jsonNode["Drive"] != null) nfsInfoPojo.Drive = (string)jsonNode["Drive"]!;
                     if (jsonNode["IsEnable"] != null) nfsInfoPojo.IsEnable = (bool)jsonNode["IsEnable"]!;
                     if (jsonNode["Date"] != null) nfsInfoPojo.Date = (DateTimeOffset)jsonNode["Date"]!;
                     if (jsonNode["CreateDate"] != null)
@@ -160,7 +162,9 @@ public partial class App
             NfsInfos = NfsInfos.Select(n => new
             {
                 n.Id,
+                n.Name,
                 n.NfsPath,
+                n.Drive,
                 n.IsEnable,
                 n.Date,
                 n.CreateDate

@@ -58,9 +58,21 @@ public partial class MountNfs
     {
         var path = Interaction.InputBox("请输入挂载路径：\n例1：/\n例2：/目录1/目录2", "添加路径");
         if (string.IsNullOrWhiteSpace(path)) return;
-
+        var drive = Interaction.InputBox("请输入挂载的盘符：\n例1：Z:\\", "挂载盘符");
+        if (string.IsNullOrWhiteSpace(drive)) return;
+        var name = Interaction.InputBox("请输入挂载的盘符名称\n例1：电脑同步", "设置名称");
+        if (string.IsNullOrWhiteSpace(name)) return;
         var enable = MessageBox.Show("是否启用该路径？", "确认", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
-        NfsInfoPojos.Add(new NfsInfoPojo { NfsPath = path, IsEnable = enable, Date = DateTime.Now });
+        long id = 0;
+        foreach (var nfsInfoPojo in NfsInfoPojos)
+            if (nfsInfoPojo.Id >= id)
+                id = nfsInfoPojo.Id;
+        id++;
+        NfsInfoPojos.Add(new NfsInfoPojo
+        {
+            Id = id, Name = name, NfsPath = path, IsEnable = enable, Date = DateTime.Now, CreateDate = DateTime.Now,
+            Drive = drive
+        });
         //NfsInfoPojos 检查 NfsPath合法性
         //修改到全局
         App.NfsInfos.Clear();

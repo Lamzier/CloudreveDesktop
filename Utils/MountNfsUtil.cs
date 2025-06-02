@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using System.Windows;
 using CloudreveDesktop.CloudreveApi;
 using CloudreveDesktop.pojo;
+using CloudreveDesktop.Services;
 using DokanNet;
 using Microsoft.Win32;
 
@@ -43,7 +44,12 @@ public static class MountNfsUtil
             // 获取实际版本
             var actualVersion = GetActualDriverVersion();
             var apiVersion = GetApiVersion();
-            if (actualVersion != null && apiVersion != null) return;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (actualVersion != null)
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (apiVersion != null)
+                    return;
+
             MessageBox.Show("Dokan 文件系统驱动未安装",
                 "请先安装 Dokan Library 2.3.0.1000 版本");
             // 打开安装Dokan程序
@@ -156,41 +162,44 @@ public static class MountNfsUtil
     public static async void Mounts()
     {
         Directory.CreateDirectory(App.TempPath); // 创建目录
-        foreach (var nfsInfoPojo in App.NfsInfos.Where(nfsInfoPojo => nfsInfoPojo.IsEnable)) await Mount(nfsInfoPojo);
+        foreach (var nfsInfoPojo in App.NfsInfos.Where(nfsInfoPojo => nfsInfoPojo.IsEnable)) Mount(nfsInfoPojo); // 异步
     }
 
+    /**
+     * 挂载
+     */
     private static async Task Mount(NfsInfoPojo nfsInfoPojo)
     {
-        var mountPath = App.TempPath + $@"\mounts\{nfsInfoPojo.Id}"; // 挂载路径
-        // C:\Users\12554\AppData\Local\Temp\CloudreveDesktop\mounts\1
-        Directory.CreateDirectory(mountPath); // 创建目录
-        // 自定义列名
-        // ExplorerUtil.CustomColumnNames(mountPath);
-
-
-        // 挂载目录
-        var files = await GetFiles(nfsInfoPojo.NfsPath);
-        UpdateFiles(mountPath, nfsInfoPojo.NfsPath, files); // 更新文件
-        // 监听事件
-        // DirListener.StartOpenListening(mountPath, nfsInfoPojo.NfsPath);
+        using var dokan = new Dokan(null!);
+        var rfs = new RfsService(nfsInfoPojo);
+        var dokanBuilder = new DokanInstanceBuilder(dokan)
+            .ConfigureOptions(options =>
+            {
+                options.Options = DokanOptions.DebugMode;
+                options.MountPoint = nfsInfoPojo.Drive; // 设置挂载到的硬盘
+            });
+        using (dokanBuilder.Build(rfs))
+        {
+            while (nfsInfoPojo.IsEnable) await Task.Delay(1000); // 每秒一次检测
+        }
     }
 
     // 创建目录
-    private static void UpdateFiles(string mountPath, string netPath, List<FilePojo> files)
-    {
-        var fullPath = Path.Combine(
-            mountPath.TrimEnd('\\', '/'),
-            netPath.TrimStart('\\', '/')
-        ).Replace('/', Path.DirectorySeparatorChar); // 拼接成当前目录
-        // 创建文件 / 文件夹
-        foreach (var filePojo in files)
-            if (filePojo.Type.ToLower().Equals("dir"))
-                Directory.CreateDirectory(fullPath + $@"\{filePojo.Name}"); // 创建目录
-            else
-                using (File.Create(fullPath + $@"\{filePojo.Name}")) // 创建文件
-                {
-                }
-    }
+    // private static void UpdateFiles(string mountPath, string netPath, List<FilePojo> files)
+    // {
+    //     var fullPath = Path.Combine(
+    //         mountPath.TrimEnd('\\', '/'),
+    //         netPath.TrimStart('\\', '/')
+    //     ).Replace('/', Path.DirectorySeparatorChar); // 拼接成当前目录
+    //     // 创建文件 / 文件夹
+    //     foreach (var filePojo in files)
+    //         if (filePojo.Type.ToLower().Equals("dir"))
+    //             Directory.CreateDirectory(fullPath + $@"\{filePojo.Name}"); // 创建目录
+    //         else
+    //             using (File.Create(fullPath + $@"\{filePojo.Name}")) // 创建文件
+    //             {
+    //             }
+    // }
 
     private static async Task<List<FilePojo>> GetFiles(string nfsPath)
     {
