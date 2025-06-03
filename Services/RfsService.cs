@@ -16,6 +16,7 @@ public class RfsService : IDokanOperations
     private readonly string _cachePath; // 缓存路径
     private readonly LiteDbStorageService _fileIdsLiteDbStorageService; // 文件ID数据库
     private readonly NfsInfoPojo _nfsInfo;
+    private IDokanOperations _dokanOperationsImplementation;
 
 
     /**
@@ -32,6 +33,9 @@ public class RfsService : IDokanOperations
     public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options,
         FileAttributes attributes, IDokanFileInfo info)
     {
+        var prohibitedFiles = new[] { "desktop.ini", "thumbs.db" };
+        if (prohibitedFiles.Contains(Path.GetFileName(fileName).ToLower())) return DokanResult.AccessDenied;
+
         // 处理目录创建请求
         if (mode == FileMode.CreateNew &&
             attributes.HasFlag(FileAttributes.Directory)) return NtStatus.Success; // 虚拟目录始终创建成功
@@ -54,10 +58,16 @@ public class RfsService : IDokanOperations
 
     public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
     {
+        // bytesRead = 0;
+        // return NtStatus.Success;
         bytesRead = 0;
         if (info.IsDirectory) return NtStatus.Success;
 
-        if (fileName.ToLower().EndsWith("desktop.ini")) return NtStatus.Success;
+
+        if (Path.GetExtension(fileName).ToLower() == ".lnk") return DokanResult.AccessDenied; // 阻止直接访问快捷方式
+        if (fileName.ToLower().EndsWith("desktop.ini")) return NtStatus.Success; // 过滤系统文件或临时文件
+
+
         // 路径安全检查
         var sanitizedPath = fileName.Replace("\\", "/").TrimStart('/');
         if (sanitizedPath.Contains(".."))
@@ -65,7 +75,6 @@ public class RfsService : IDokanOperations
             Console.WriteLine($"非法路径: {fileName}");
             return DokanResult.AccessDenied;
         }
-
 
         // 从数据库获取
         var fileId = _fileIdsLiteDbStorageService.Get(fileName.Replace("\\", "/"));
@@ -83,16 +92,20 @@ public class RfsService : IDokanOperations
             if (resultJson.StartsWith("/")) resultJson = resultJson.AsSpan()[1..].ToString();
             FilesApi.DownloadFile(App.ServerUrl + resultJson, cacheFilePath, lastWriteTimeNet, creationTimeNet)
                 .GetAwaiter().GetResult();
+            // 校验文件
+            var expectedSize = (long)json["size"]!;
+            var actualSize = new FileInfo(cacheFilePath).Length;
+            if (actualSize != expectedSize) File.Delete(cacheFilePath);
         }
-
+        // 读取逻辑
 
         using var fs = new FileStream(
             cacheFilePath,
             FileMode.Open,
             System.IO.FileAccess.Read,
-            FileShare.Read,
+            FileShare.ReadWrite,
             4096, // 缓冲区
-            true);
+            FileOptions.SequentialScan);
 
         if (offset > 0) fs.Seek(offset, SeekOrigin.Begin);
 
@@ -128,6 +141,23 @@ public class RfsService : IDokanOperations
         return NtStatus.Success;
     }
 
+    // public NtStatus GetFileInformation(
+    //     string filename,
+    //     out FileInformation fileinfo,
+    //     IDokanFileInfo info)
+    // {
+    //     fileinfo = new FileInformation
+    //     {
+    //         FileName = filename,
+    //         Attributes = FileAttributes.Directory,
+    //         LastAccessTime = DateTime.Now,
+    //         LastWriteTime = DateTime.Now,
+    //         CreationTime = DateTime.Now
+    //     };
+    //
+    //     return DokanResult.Success;
+    // }
+
     public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
     {
         fileInfo = new FileInformation { FileName = fileName };
@@ -146,11 +176,11 @@ public class RfsService : IDokanOperations
             var fileData = _fileIdsLiteDbStorageService.Get(sanitizedPath);
             if (string.IsNullOrEmpty(fileData)) return DokanResult.FileNotFound;
             var json = JsonNode.Parse(fileData);
-            var isDirectory = json?["type"]?.GetValue<string>()?.ToLower() == "dir";
+            var isDirectory = json?["type"]?.GetValue<string>().ToLower() == "dir";
             fileInfo.Attributes = isDirectory ? FileAttributes.Directory : FileAttributes.Normal;
             fileInfo.Length = isDirectory ? 0 : (long)json!["size"]!;
             fileInfo.CreationTime = (DateTime)json!["create_date"]!;
-            fileInfo.LastWriteTime = (DateTime)json!["date"]!;
+            fileInfo.LastWriteTime = (DateTime)json["date"]!;
             fileInfo.LastAccessTime = DateTime.Now;
             return DokanResult.Success;
         }
@@ -194,7 +224,6 @@ public class RfsService : IDokanOperations
             _fileIdsLiteDbStorageService.Put(key, jsonNode.ToJsonString()); // 写入键值到数据库
         }
 
-
         return NtStatus.Success;
     }
 
@@ -225,6 +254,18 @@ public class RfsService : IDokanOperations
     public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
     {
         Console.WriteLine("MoveFile");
+        var oldDirectoryName = Path.GetDirectoryName(oldName);
+        var newDirectoryName = Path.GetDirectoryName(newName);
+        if (oldDirectoryName != null && oldDirectoryName.Equals(newDirectoryName))
+            return ReName(oldName, newName, replace, info); // 重命名操作
+
+        // 移动操作
+        // Console.WriteLine(oldName);
+        // Console.WriteLine(newName);
+        // Console.WriteLine(oldDirectoryName);
+        // Console.WriteLine(newDirectoryName);
+        // Console.WriteLine(replace);
+
         return NtStatus.Success;
     }
 
@@ -319,37 +360,34 @@ public class RfsService : IDokanOperations
     public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
     {
         Console.WriteLine("FindStreams");
-        streams = null;
+        streams = null!;
         return NtStatus.Success;
     }
 
-    public static bool IsFileTimeEqual(DateTime? time1, DateTime? time2)
+    private NtStatus ReName(string oldName, string newName, bool replace, IDokanFileInfo info)
     {
-        const int fileTimeToleranceMs = 2000; // 2秒
+        // 检查是否有重名（本地检查，服务器检查）
+        var newFileJson = _fileIdsLiteDbStorageService.Get(newName.Replace("\\", "/"));
+        if (!string.IsNullOrEmpty(newFileJson)) return NtStatus.ObjectNameCollision;
+        var oldFileJson = _fileIdsLiteDbStorageService.Get(oldName.Replace("\\", "/"));
+        if (string.IsNullOrEmpty(oldFileJson) || !File.Exists(_cachePath + oldName))
+            // 不存在文件
+            return NtStatus.NoSuchFile;
 
-        if (time1 == null && time2 == null) return true;
-        if (time1 == null || time2 == null) return false;
-
-        var t1 = time1.Value.ToFileTimeUtc();
-        var t2 = time2.Value.ToFileTimeUtc();
-
-        return Math.Abs(t1 - t2) <= fileTimeToleranceMs * 10000; // 转换为100ns单位
+        // 校验完成添加异步任务
+        TaskService.Instance.AddReNameTask(oldName, newName);
+        // 修改本地缓存文件
+        File.Move(_cachePath + oldName, _cachePath + newName);
+        return NtStatus.Success;
     }
 
-    private long GetFileSizeFromDb(string fileName)
-    {
-        var fileData = _fileIdsLiteDbStorageService.Get(fileName.Replace("\\", "/"));
-        return (long)JsonNode.Parse(fileData)!["size"]!;
-    }
 
     private static JsonNode ResultJson(JsonNode json)
     {
         JsonNode result = new JsonObject();
         var code = (int)json["code"]!;
-        var msg = (string)json["msg"]!;
         if (code != 0)
             return result;
-
         var data = json["data"];
         return data ?? result;
     }

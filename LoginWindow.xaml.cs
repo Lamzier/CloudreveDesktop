@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using CloudreveDesktop.CloudreveApi;
 using CloudreveDesktop.utils;
 
 namespace CloudreveDesktop;
@@ -57,17 +54,7 @@ public partial class LoginWindow
 
     private async Task Login(string username, string password, string captchaCode)
     {
-        var loginData = new
-        {
-            Password = password,
-            userName = username,
-            captchaCode
-        };
-        var loginJson = JsonSerializer.Serialize(loginData);
-        var jsonContent = new StringContent(loginJson, Encoding.UTF8, "application/json");
-        var response = await App.HttpClient.PostAsync(App.ServerUrl + "api/v3/user/session", jsonContent);
-        var responseString = await response.Content.ReadAsStringAsync();
-        var json = JsonNode.Parse(responseString)!;
+        var json = await UserApi.Login(username, password, captchaCode);
         var code = (int)json["code"]!;
         var msg = (string)json["msg"]!;
         if (code != 0)
@@ -77,15 +64,13 @@ public partial class LoginWindow
         }
 
         // 登陆成功
-        var cookies = response.Headers.GetValues("Set-Cookie").ToList();
-        App.Cookies.Clear(); //清除cookies
-        App.Cookies.AddRange(cookies); // 添加cookies
         App.UserName = username;
         App.Password = password;
         App.UpdateUser(); //更新数据到本地文件
         _isLogin = true;
         // 重新渲染主窗体UI
         App.IsLoggedIn = true;
+        MainWindow.Instance.Show();
         Close();
     }
 
@@ -115,9 +100,6 @@ public partial class LoginWindow
         }
 
         Application.Current.Shutdown(); //关闭整个程序，因为没有登陆
-        // var result = MessageBox.Show("不登录则无法正常使用，是否关闭？", "信息", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        // if (result == MessageBoxResult.No) e.Cancel = true; //阻止关闭
-        // else Application.Current.Shutdown(); //关闭整个程序
         base.OnClosing(e);
     }
 

@@ -24,12 +24,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DokanNet" Version="2.3.0.1"/>
+        <PackageReference Include="DokanNet" Version="2.3.0.1" />
         <PackageReference Include="LiteDB" Version="5.0.21"/>
+        <PackageReference Include="LTRData.Extensions.Native" Version="1.0.18" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0-preview.4.25258.110"/>
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0-preview.4.25258.110"/>
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135"/>
         <PackageReference Include="NUnit" Version="4.3.2"/>
+        <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
+        <PackageReference Include="System.Memory" Version="4.6.3" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+        <PackageReference Include="System.ValueTuple" Version="4.6.1" />
     </ItemGroup>
 
     <ItemGroup>

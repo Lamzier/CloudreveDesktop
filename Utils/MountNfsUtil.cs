@@ -159,10 +159,11 @@ public static class MountNfsUtil
         }
     }
 
-    public static async void Mounts()
+    public static void Mounts()
     {
         Directory.CreateDirectory(App.TempPath); // 创建目录
-        foreach (var nfsInfoPojo in App.NfsInfos.Where(nfsInfoPojo => nfsInfoPojo.IsEnable)) Mount(nfsInfoPojo); // 异步
+        foreach (var nfsInfoPojo in App.NfsInfos.Where(nfsInfoPojo => nfsInfoPojo.IsEnable))
+            _ = Mount(nfsInfoPojo); // 异步
     }
 
     /**
@@ -183,23 +184,6 @@ public static class MountNfsUtil
             while (nfsInfoPojo.IsEnable) await Task.Delay(1000); // 每秒一次检测
         }
     }
-
-    // 创建目录
-    // private static void UpdateFiles(string mountPath, string netPath, List<FilePojo> files)
-    // {
-    //     var fullPath = Path.Combine(
-    //         mountPath.TrimEnd('\\', '/'),
-    //         netPath.TrimStart('\\', '/')
-    //     ).Replace('/', Path.DirectorySeparatorChar); // 拼接成当前目录
-    //     // 创建文件 / 文件夹
-    //     foreach (var filePojo in files)
-    //         if (filePojo.Type.ToLower().Equals("dir"))
-    //             Directory.CreateDirectory(fullPath + $@"\{filePojo.Name}"); // 创建目录
-    //         else
-    //             using (File.Create(fullPath + $@"\{filePojo.Name}")) // 创建文件
-    //             {
-    //             }
-    // }
 
     private static async Task<List<FilePojo>> GetFiles(string nfsPath)
     {

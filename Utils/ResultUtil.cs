@@ -13,4 +13,14 @@ public static class ResultUtil
         };
         return jsonObject;
     }
+
+    public static JsonNode GetJson(int code, string msg)
+    {
+        var jsonObject = new JsonObject
+        {
+            { "code", code },
+            { "msg", msg }
+        };
+        return jsonObject;
+    }
 }

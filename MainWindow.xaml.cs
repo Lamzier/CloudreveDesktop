@@ -14,8 +14,10 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
+        Hide(); // 隐藏
         CheckLogin(); //检查登陆 + 渲染数据
         Instance = this;
+        // 初始化就隐藏 
     }
 
     public static MainWindow Instance { get; private set; } = null!;
@@ -62,10 +64,16 @@ public partial class MainWindow
         var userSetting = await UserApi.GetUserSetting();
         var code = (int)userSetting["code"]!;
         var msg = (string)userSetting["msg"]!;
-        if (code is 401 or -1)
+
+        switch (code)
         {
-            new LoginWindow().ShowDialog(); // 没登录 阻塞显示
-            return;
+            case 401:
+                new LoginWindow().ShowDialog(); // 没登录 阻塞显示
+                return;
+            case -1:
+                MessageBox.Show("目标服务器连接失败！", "信息");
+                new LoginWindow().ShowDialog(); // 服务器网络异常
+                return;
         }
 
         if (code != 0)
@@ -76,6 +84,7 @@ public partial class MainWindow
 
         // 已经登陆
         App.IsLoggedIn = true;
+        Show();
         Rendering(); //渲染数据
     }
 
