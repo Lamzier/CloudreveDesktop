@@ -12,6 +12,19 @@
         Height="500"
         ShowInTaskbar="False"
         Width="400">
+    <Window.Resources>
+        <Style x:Key="DarkMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Background" Value="#333333" />
+            <Setter Property="BorderBrush" Value="#444444" />
+            <Setter Property="Foreground" Value="White" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5A78E8" />
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid Background="#333333">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <!-- Logo -->
@@ -62,7 +75,14 @@
                        VerticalAlignment="Bottom"
                        Margin="0,40,0,0"
                        Cursor="Hand"
-                       MouseLeftButtonDown="DomainName_Click" />
+                       MouseLeftButtonDown="DomainName_Click">
+                <TextBlock.ContextMenu>
+                    <ContextMenu Background="#333333" Foreground="White">
+                        <MenuItem Header="修改服务器地址" Click="ChangeServer_Click"
+                                  Style="{StaticResource DarkMenuItemStyle}" />
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
+            </TextBlock>
         </StackPanel>
     </Grid>
 </Window>

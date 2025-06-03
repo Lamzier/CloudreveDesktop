@@ -131,8 +131,8 @@ public partial class MyFiles
                 Path = (string)jsonNode?["path"]!,
                 Size = (long)jsonNode?["size"]!,
                 Type = (string)jsonNode?["type"]!,
-                Date = (DateTimeOffset)jsonNode?["date"]!,
-                CreateDate = (DateTimeOffset)jsonNode?["create_date"]!
+                Date = (DateTime)jsonNode?["date"]!,
+                CreateDate = (DateTime)jsonNode?["create_date"]!
             };
             _fileItems.Add(filePojo);
         }
@@ -178,8 +178,8 @@ public partial class MyFiles
         var data = (string)json["data"]!;
         if (data.StartsWith("/")) data = data.Substring(1);
         var downloadUrl = App.ServerUrl + data; // 文件下载Url
-
-        var state = await FilesApi.DownloadFile(downloadUrl, App.DownloadPath + "/" + item.Name);
+        var state = await FilesApi.DownloadFile(downloadUrl, App.DownloadPath + "/" + item.Name, item.Date,
+            item.CreateDate);
 
         // 添加完成下载提示和音效
         if (state)

@@ -15,12 +15,11 @@ namespace CloudreveDesktop;
 public partial class App
 {
     // 服务器地址
-    // public static readonly string ServerUrl = "http://nas.lamzy.cn/";
-    public static readonly string ServerUrl = "http://127.0.0.1:5212/";
+    public static string ServerUrl = "http://127.0.0.1:5212/";
 
-    public static readonly string DomainName = "nas.lamzy.cn";
+    public static string DomainName = "www.Lamzy.cn";
 
-    public static readonly string ServerName = "LamNas";
+    public static string ServerName = "Lamzy";
 
     public static readonly List<NfsInfoPojo> NfsInfos = [];
 
@@ -107,6 +106,9 @@ public partial class App
 
             if (json["userName"] != null) UserName = (string)json["userName"]!;
             if (json["Password"] != null) Password = (string)json["Password"]!;
+            if (json["ServerUrl"] != null) ServerUrl = (string)json["ServerUrl"]!;
+            if (json["DomainName"] != null) DomainName = (string)json["DomainName"]!;
+            if (json["ServerName"] != null) ServerName = (string)json["ServerName"]!;
         }
         catch (Exception e)
         {
@@ -145,6 +147,10 @@ public partial class App
     // 清除数据，用于注销登陆
     public static void ClearData()
     {
+        // 注销后无需清理的数据
+        // ServerUrl = "http://127.0.0.1:5212/";
+        // DomainName = "www.Lamzy.cn";
+        // ServerName = "Lamzy";
         UserName = "";
         Password = "";
         Cookies.Clear();
@@ -156,6 +162,9 @@ public partial class App
     {
         var userData = new
         {
+            ServerUrl,
+            DomainName,
+            ServerName,
             Cookies,
             userName = UserName,
             Password,

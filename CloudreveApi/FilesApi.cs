@@ -34,7 +34,8 @@ public static class FilesApi
         return json;
     }
 
-    public static async Task<bool> DownloadFile(string url, string savePath)
+    public static async Task<bool> DownloadFile(string url, string savePath, DateTime? lastWriteTime,
+        DateTime? creationTime)
     {
         var cookies = App.GetCookies();
         if (cookies.Length <= 0) return false;
@@ -47,6 +48,13 @@ public static class FilesApi
             response.EnsureSuccessStatusCode();
             await using var fileStream = File.Create(savePath);
             await response.Content.CopyToAsync(fileStream);
+            if (lastWriteTime != null)
+            {
+                File.SetLastWriteTime(savePath, lastWriteTime.Value);
+                File.SetLastAccessTime(savePath, lastWriteTime.Value);
+            }
+
+            if (creationTime != null) File.SetCreationTimeUtc(savePath, creationTime.Value);
             return true;
         }
         catch (Exception)

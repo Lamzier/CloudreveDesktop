@@ -6,6 +6,9 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using CloudreveDesktop.utils;
 
 namespace CloudreveDesktop;
 
@@ -111,9 +114,182 @@ public partial class LoginWindow
             return;
         }
 
-        var result = MessageBox.Show("不登录则无法正常使用，是否关闭？", "信息", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (result == MessageBoxResult.No) e.Cancel = true; //阻止关闭
-        else Application.Current.Shutdown(); //关闭整个程序
+        Application.Current.Shutdown(); //关闭整个程序，因为没有登陆
+        // var result = MessageBox.Show("不登录则无法正常使用，是否关闭？", "信息", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        // if (result == MessageBoxResult.No) e.Cancel = true; //阻止关闭
+        // else Application.Current.Shutdown(); //关闭整个程序
         base.OnClosing(e);
+    }
+
+    private void ChangeServer_Click(object sender, RoutedEventArgs e)
+    {
+        var inputDialog = new Window
+        {
+            Title = "修改服务器配置",
+            Width = 400,
+            Height = 380,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen, // 强制屏幕居中
+            ResizeMode = ResizeMode.NoResize,
+            Icon = Application.Current.Resources["SettingsIcon"] as ImageSource // 使用资源图标
+        };
+
+        var mainStack = new StackPanel
+        {
+            Margin = new Thickness(20),
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        // 统一控件样式
+        var labelStyle = new Style(typeof(Label))
+        {
+            Setters =
+            {
+                new Setter(FontSizeProperty, 14.0),
+                new Setter(ForegroundProperty, Brushes.DimGray),
+                new Setter(MarginProperty, new Thickness(0, 8, 0, 2))
+            }
+        };
+
+        var textBoxStyle = new Style(typeof(TextBox))
+        {
+            Setters =
+            {
+                new Setter(FontSizeProperty, 14.0),
+                new Setter(HeightProperty, 30.0),
+                new Setter(PaddingProperty, new Thickness(5)),
+                new Setter(BorderBrushProperty, Brushes.LightGray),
+                new Setter(BorderThicknessProperty, new Thickness(1)),
+                new Setter(VerticalContentAlignmentProperty, VerticalAlignment.Center)
+            }
+        };
+
+        // 服务器地址
+        var spUrl = new StackPanel();
+        spUrl.Children.Add(new Label { Content = "服务器地址：", Style = labelStyle });
+        var txtUrl = new TextBox
+        {
+            Text = App.ServerUrl,
+            ToolTip = "支持http/https协议\n示例：http://127.0.0.1:5212/",
+            Style = textBoxStyle
+        };
+        spUrl.Children.Add(txtUrl);
+
+        // 服务器域名
+        var spDomain = new StackPanel { Margin = new Thickness(0, 10, 0, 0) };
+        spDomain.Children.Add(new Label { Content = "服务器域名：", Style = labelStyle });
+        var txtDomain = new TextBox
+        {
+            Text = App.DomainName,
+            ToolTip = "支持域名或IP地址\n示例：nas.lamzy.cn",
+            Style = textBoxStyle
+        };
+        spDomain.Children.Add(txtDomain);
+
+        // 服务器名称
+        var spName = new StackPanel { Margin = new Thickness(0, 10, 0, 0) };
+        spName.Children.Add(new Label { Content = "服务器名称：", Style = labelStyle });
+        var txtName = new TextBox
+        {
+            Text = App.ServerName,
+            ToolTip = "用于显示的友好名称\n示例：LamNas",
+            Style = textBoxStyle
+        };
+        spName.Children.Add(txtName);
+
+        // 按钮容器
+        var buttonPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 20, 0, 0)
+        };
+
+        // 带样式的按钮
+        var btnStyle = new Style(typeof(Button))
+        {
+            Setters =
+            {
+                new Setter(WidthProperty, 90.0),
+                new Setter(HeightProperty, 32.0),
+                new Setter(FontSizeProperty, 13.0),
+                new Setter(ForegroundProperty, Brushes.White),
+                new Setter(PaddingProperty, new Thickness(15, 8, 15, 8)),
+                new Setter(MarginProperty, new Thickness(10, 0, 0, 0)),
+                new Setter(BorderThicknessProperty, new Thickness(0)),
+                new Setter(BorderBrushProperty, Brushes.Transparent)
+            }
+        };
+
+        var btnOk = new Button
+        {
+            Content = "保 存",
+            Style = btnStyle,
+            Background = new SolidColorBrush(Color.FromRgb(0, 120, 215))
+        };
+
+        var btnCancel = new Button
+        {
+            Content = "取 消",
+            Style = btnStyle,
+            Background = new SolidColorBrush(Color.FromRgb(150, 150, 150))
+        };
+        // 事件处理
+        btnOk.Click += (s, args) =>
+        {
+            var url = txtUrl.Text.Trim();
+            var domain = txtDomain.Text.Trim();
+            var name = txtName.Text.Trim();
+            // URL校验逻辑
+            if (!url.EndsWith("/"))
+            {
+                MessageBox.Show("服务器地址必须以斜杠(/)结尾！",
+                    "输入错误",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                txtUrl.Focus();
+                txtUrl.SelectAll();
+                return;
+            }
+
+            // 有效性校验（可选扩展）
+            if (string.IsNullOrWhiteSpace(url) ||
+                !Uri.TryCreate(url, UriKind.Absolute, out _))
+            {
+                MessageBox.Show("请输入有效的URL地址！",
+                    "输入错误",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                txtUrl.Focus();
+                txtUrl.SelectAll();
+                return;
+            }
+
+            // 保存有效值
+            App.ServerUrl = url;
+            App.DomainName = domain;
+            App.ServerName = name;
+            inputDialog.DialogResult = true;
+        };
+
+        btnCancel.Click += (s, args) => inputDialog.DialogResult = false;
+
+        // 组合控件
+        buttonPanel.Children.Add(btnCancel);
+        buttonPanel.Children.Add(btnOk);
+
+        mainStack.Children.Add(spUrl);
+        mainStack.Children.Add(spDomain);
+        mainStack.Children.Add(spName);
+        mainStack.Children.Add(buttonPanel);
+
+        inputDialog.Content = mainStack;
+
+        // 显示对话框
+        if (inputDialog.ShowDialog() != true) return;
+        MessageBox.Show("配置更新成功！\n需要重启程序才能生效！", "系统提示",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+        App.UpdateUser(); //写到本地
+        AppUtil.Restart(); //重启
     }
 }

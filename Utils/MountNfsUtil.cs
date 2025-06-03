@@ -214,8 +214,8 @@ public static class MountNfsUtil
                 Path = (string)jsonNode["path"]!,
                 Size = (long)jsonNode["size"]!,
                 Type = (string)jsonNode["type"]!,
-                Date = (DateTimeOffset)jsonNode["date"]!,
-                CreateDate = (DateTimeOffset)jsonNode["create_date"]!
+                Date = (DateTime)jsonNode["date"]!,
+                CreateDate = (DateTime)jsonNode["create_date"]!
             }));
         return files;
     }
